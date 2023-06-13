@@ -1,14 +1,16 @@
 package com.example.minipropertymanagement.domain;
 
 
+import com.example.minipropertymanagement.domain.enums.AccountStatus;
 import com.example.minipropertymanagement.domain.enums.Role;
 import jakarta.persistence.*;
 import lombok.Data;
 
 
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED)
-abstract public class Person {
+@Data
+@Table(name = "users")
+ public class User {
 
     @Id
     @GeneratedValue
@@ -18,4 +20,7 @@ abstract public class Person {
     private String lastName;
     private Role role;
 
+    private String email;
+    private String password;
+    private AccountStatus accountStatus;
 }
