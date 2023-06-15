@@ -6,6 +6,8 @@ import com.example.minipropertymanagement.domain.enums.Role;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.List;
+
 
 @Entity
 @Data
@@ -18,7 +20,7 @@ import lombok.Data;
 
     private String firstName;
     private String lastName;
-    private Role role;
+    private List<Role> roles;
 
     private String email;
     private String password;
