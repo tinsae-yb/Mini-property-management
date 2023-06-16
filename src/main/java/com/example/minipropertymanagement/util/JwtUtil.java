@@ -55,8 +55,9 @@ public class JwtUtil {
     public String generateToken(User user, boolean isRefreshToken) {
         Map<String, Object> claims = new HashMap<>();
         if (!isRefreshToken) {
-            claims.put("roles", user.getRoles());
+            claims.put("roles", user.getRole());
         }
+        claims.put("accountStatus", user.getAccountStatus());
         return Jwts.builder().setClaims(claims).setSubject(user.getEmail()).setIssuedAt(new Date(System.currentTimeMillis())).setExpiration(new Date(System.currentTimeMillis() + (isRefreshToken ? refreshExpiration : accessTokenExpiration))).signWith(SignatureAlgorithm.HS512, secret).compact();
     }
 

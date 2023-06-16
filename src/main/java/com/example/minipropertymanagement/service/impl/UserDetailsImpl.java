@@ -2,9 +2,11 @@ package com.example.minipropertymanagement.service.impl;
 
 import com.example.minipropertymanagement.domain.User;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.List;
 
 
 public class UserDetailsImpl implements UserDetails {
@@ -19,7 +21,7 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return user.getRoles().stream().map(role -> (GrantedAuthority) role::getRole).toList();
+        return List.of(new SimpleGrantedAuthority(user.getRole().getRole()));
     }
 
     @Override

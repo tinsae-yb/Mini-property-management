@@ -6,13 +6,11 @@ import com.example.minipropertymanagement.domain.enums.Role;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.util.List;
-
 
 @Entity
 @Data
-@Table(name = "users")
- public class User {
+@Table(name = "users", uniqueConstraints = {@UniqueConstraint(columnNames = {"email"}, name = "unique_email" )})
+public class User {
 
     @Id
     @GeneratedValue
@@ -20,8 +18,10 @@ import java.util.List;
 
     private String firstName;
     private String lastName;
-    private List<Role> roles;
+    private Role role;
 
+
+//    @Column(unique = true)
     private String email;
     private String password;
     private AccountStatus accountStatus;

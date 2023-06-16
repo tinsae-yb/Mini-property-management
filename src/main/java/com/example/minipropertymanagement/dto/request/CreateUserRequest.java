@@ -7,8 +7,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.springframework.validation.annotation.Validated;
 
-import java.util.List;
-
 @Validated
 @Data
 public class CreateUserRequest {
@@ -26,6 +24,6 @@ public class CreateUserRequest {
     private String lastName;
 
     @NotNull
-    private List<Role> roles;
+    private Role role;
 
 }
