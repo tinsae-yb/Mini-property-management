@@ -6,6 +6,8 @@ import com.example.minipropertymanagement.domain.enums.Role;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.List;
+
 
 @Entity
 @Data
@@ -25,4 +27,7 @@ public class User {
     private String email;
     private String password;
     private AccountStatus accountStatus;
+
+    @OneToMany(mappedBy = "user")
+    private List<Property> properties;
 }
