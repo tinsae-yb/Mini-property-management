@@ -15,6 +15,7 @@ public class Property {
     @GeneratedValue
     private long id;
 
+    private String image;
     private BigDecimal price;
 
     private Address address;
