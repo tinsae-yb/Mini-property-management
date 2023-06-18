@@ -29,9 +29,11 @@ public class JwtUtil {
     private final UserDetailsService userDetailsService;
 
 
-    private Claims getClaims(String token) {
+    public Claims getClaims(String token) {
         return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
     }
+
+
 
 
     public boolean validateToken(String token) {

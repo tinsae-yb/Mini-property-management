@@ -3,7 +3,10 @@ package com.example.minipropertymanagement.controller;
 
 import com.example.minipropertymanagement.dto.request.CreateUserRequest;
 import com.example.minipropertymanagement.dto.request.LoginRequest;
+import com.example.minipropertymanagement.dto.request.RefreshTokenRequest;
 import com.example.minipropertymanagement.dto.response.LoginResponse;
+import com.example.minipropertymanagement.dto.response.RefreshTokenResponse;
+import com.example.minipropertymanagement.exception.InvalidCredential;
 import com.example.minipropertymanagement.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +32,11 @@ public class AuthController {
     @ResponseStatus(HttpStatus.CREATED)
     public LoginResponse register(@Valid @RequestBody CreateUserRequest createUserRequest) {
         return authService.register(createUserRequest);
+    }
+    @PostMapping("/refreshToken")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public RefreshTokenResponse refreshToken(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest) throws InvalidCredential {
+        return authService.refreshToken(refreshTokenRequest);
     }
 
 }

@@ -5,11 +5,14 @@ import com.example.minipropertymanagement.domain.enums.AccountStatus;
 import com.example.minipropertymanagement.domain.enums.Role;
 import com.example.minipropertymanagement.dto.request.CreateUserRequest;
 import com.example.minipropertymanagement.dto.request.LoginRequest;
+import com.example.minipropertymanagement.dto.request.RefreshTokenRequest;
 import com.example.minipropertymanagement.dto.response.LoginResponse;
+import com.example.minipropertymanagement.dto.response.RefreshTokenResponse;
 import com.example.minipropertymanagement.exception.InvalidCredential;
 import com.example.minipropertymanagement.repo.UserRepository;
 import com.example.minipropertymanagement.service.AuthService;
 import com.example.minipropertymanagement.util.JwtUtil;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -61,5 +64,21 @@ public class AuthServiceImpl implements AuthService {
         loginResponse.setRefreshToken(jwtUtil.generateToken(user, true));
         return loginResponse;
 
+    }
+
+    @Override
+    public RefreshTokenResponse refreshToken(RefreshTokenRequest refreshTokenRequest) throws InvalidCredential {
+        boolean valid = jwtUtil.validateToken(refreshTokenRequest.getRefreshToken());
+        if (!valid) {
+            throw new InvalidCredential("Invalid refresh token");
+        }
+        Claims claims = jwtUtil.getClaims(refreshTokenRequest.getRefreshToken());
+        String email = claims.getSubject();
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new InvalidCredential("User not found with this email"));
+        RefreshTokenResponse refreshTokenResponse = new RefreshTokenResponse();
+        refreshTokenResponse.setAccessToken(jwtUtil.generateToken(user, false));
+        refreshTokenResponse.setRefreshToken(refreshTokenRequest.getRefreshToken());
+
+        return refreshTokenResponse;
     }
 }
