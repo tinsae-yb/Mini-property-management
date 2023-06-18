@@ -3,6 +3,7 @@ package com.example.minipropertymanagement.advice;
 
 import com.example.minipropertymanagement.exception.InvalidCredential;
 import com.example.minipropertymanagement.exception.NotFoundException;
+import org.hibernate.sql.ast.SqlTreeCreationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
@@ -20,13 +21,20 @@ public class ControllerErrorAdvice {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException ex) {
+
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getAllErrors().forEach((error) -> {
+
+
             String fieldName = ((FieldError) error).getField();
             String errorMessage = error.getDefaultMessage();
             errors.put(fieldName, errorMessage);
         });
         return errors;
+    }
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(SqlTreeCreationException.class)
+    public void handleSqlException(SqlTreeCreationException ex) {
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)

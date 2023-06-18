@@ -1,6 +1,7 @@
 package com.example.minipropertymanagement.config;
 
 
+import com.example.minipropertymanagement.domain.enums.Role;
 import com.example.minipropertymanagement.filter.JWTFilter;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -39,16 +40,16 @@ public class Config {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests((authorize) -> {
-                    authorize.requestMatchers(HttpMethod.POST, "/api/v1/auth/**").permitAll();
-                    authorize.requestMatchers(HttpMethod.POST, "/api/v1/auth/**").permitAll();
-                }).sessionManagement(sessionManagementConfigurer -> sessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        http.csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests((authorize) -> {
+            authorize.requestMatchers(HttpMethod.POST, "/api/v1/auth/**").permitAll();
+            authorize.requestMatchers(HttpMethod.POST, "/api/v1/property").hasAuthority(Role.OWNER.getRole());
+            authorize.requestMatchers(HttpMethod.GET, "/api/v1/users").hasAuthority(Role.ADMIN.getRole());
+        }).sessionManagement(sessionManagementConfigurer -> sessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
 
     }
+
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider(UserDetailsService userDetailsService) {
