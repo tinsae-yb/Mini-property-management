@@ -1,13 +1,18 @@
 package com.example.minipropertymanagement.service.impl;
 
 import com.amazonaws.services.kms.model.NotFoundException;
+import com.example.minipropertymanagement.domain.Offer;
 import com.example.minipropertymanagement.domain.Property;
 import com.example.minipropertymanagement.domain.User;
+import com.example.minipropertymanagement.domain.enums.OfferStatus;
 import com.example.minipropertymanagement.domain.enums.PropertyType;
+import com.example.minipropertymanagement.dto.request.CreateOfferRequest;
 import com.example.minipropertymanagement.dto.request.PostPropertyRequest;
+import com.example.minipropertymanagement.dto.response.OfferResponse;
 import com.example.minipropertymanagement.dto.response.PostPropertyResponse;
 import com.example.minipropertymanagement.dto.response.PropertiesPaginatedResponse;
 import com.example.minipropertymanagement.filter.ModelMappingUtil;
+import com.example.minipropertymanagement.repo.OfferRepository;
 import com.example.minipropertymanagement.repo.PropertyCriteriaRepository;
 import com.example.minipropertymanagement.repo.PropertyRepository;
 import com.example.minipropertymanagement.repo.UserRepository;
@@ -43,26 +48,20 @@ public class PropertyServiceImpl implements PropertyService {
     private final PropertyCriteriaRepository propertyCriteriaRepository;
     private final ModelMappingUtil modelMappingUtil;
 
+    private final OfferRepository offerRepository;
     @Override
     public PostPropertyResponse postProperty(PostPropertyRequest postPropertyRequest) throws IOException {
 
         String username = authUtil.getUsername();
-
         User user = userRepository.findByEmail(username).orElseThrow(() -> new NotFoundException("User not found"));
         Property property = modelMapper.map(postPropertyRequest, Property.class);
         property.setOwner(user);
-
-
         String[] parts = postPropertyRequest.getImage().split(",");
         String contentType = parts[0].split(":")[1].split(";")[0];
         String base64Data = parts[1];
-
         byte[] imageBytes = Base64.getDecoder().decode(base64Data);
-
         String image = s3Util.uploadFile(imageBytes, contentType);
-
         property.setImage(image);
-
         propertyRepository.save(property);
 
         PostPropertyResponse postPropertyResponse = modelMapper.map(property, PostPropertyResponse.class);
@@ -77,6 +76,23 @@ public class PropertyServiceImpl implements PropertyService {
         PagedModel.PageMetadata pageMetadata = new PagedModel.PageMetadata(properties.getSize(), properties.getNumber() + 1, properties.getTotalElements(), properties.getTotalPages());
 
         return modelMappingUtil.convertToPropertiesPaginatedResponse(pageMetadata, properties.getContent());
+
+    }
+
+    @Override
+    public OfferResponse postOffer(Long propertyId, CreateOfferRequest createOfferRequest) {
+        String username = authUtil.getUsername();
+        User user = userRepository.findByEmail(username).orElseThrow(() -> new NotFoundException("User not found"));
+        Property property = propertyRepository.findById(propertyId).orElseThrow(() -> new NotFoundException("Property not found"));
+        Offer offer = new Offer();
+        offer.setOfferPrice(createOfferRequest.getOfferPrice());
+        offer.setOfferStatus(OfferStatus.PENDING);
+        offer.setProperty(property);
+        offer.setCustomer(user);
+        offerRepository.save(offer);
+
+        OfferResponse offerResponse = modelMapper.map(offer, OfferResponse.class);
+        return offerResponse;
 
     }
 }

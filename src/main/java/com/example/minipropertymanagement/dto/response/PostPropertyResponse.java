@@ -11,6 +11,7 @@ import java.util.List;
 @Data
 public class PostPropertyResponse {
 
+    private long id;
 
 
     private String image;

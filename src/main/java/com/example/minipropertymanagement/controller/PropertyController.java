@@ -2,7 +2,9 @@ package com.example.minipropertymanagement.controller;
 
 
 import com.example.minipropertymanagement.domain.enums.PropertyType;
+import com.example.minipropertymanagement.dto.request.CreateOfferRequest;
 import com.example.minipropertymanagement.dto.request.PostPropertyRequest;
+import com.example.minipropertymanagement.dto.response.OfferResponse;
 import com.example.minipropertymanagement.dto.response.PostPropertyResponse;
 import com.example.minipropertymanagement.dto.response.PropertiesPaginatedResponse;
 import com.example.minipropertymanagement.service.PropertyService;
@@ -46,5 +48,11 @@ public class PropertyController {
         return propertyService.getProperties(minPrice, maxPrice, bedRooms, bathRooms, zipCode, city, state, pageable);
     }
 
+
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping("/{propertyId}/offers")
+    public OfferResponse postOffer(@PathVariable Long propertyId, @RequestBody CreateOfferRequest createOfferRequest) {
+        return propertyService.postOffer(propertyId, createOfferRequest);
+    }
 
 }
