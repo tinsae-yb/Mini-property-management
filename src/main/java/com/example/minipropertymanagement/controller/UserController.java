@@ -22,8 +22,6 @@ public class UserController {
 
     @GetMapping("")
     public UserPaginatedResponse getOwners(Pageable pageable, @RequestParam(required = false) AccountStatus status, @RequestParam(required = false) Role role) {
-
-        System.out.println("status = " + status);
         return userService.getUsers(pageable, status, role);
     }
 }

@@ -1,6 +1,7 @@
 package com.example.minipropertymanagement.domain;
 
 
+import com.example.minipropertymanagement.domain.enums.PropertyStatus;
 import com.example.minipropertymanagement.domain.enums.PropertyType;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -20,13 +21,12 @@ public class Property {
 
     private Address address;
 
-    @OneToMany
-    @JoinColumn(name = "property_id")
-    private List<Bid> bids;
+    @OneToMany(mappedBy = "property")
+    private List<Offer> offers;
 
     @ManyToOne
     @JoinColumn(name = "seller_id")
-    private User user;
+    private User owner;
 
     private int area;
     private int numberOfBedrooms;
@@ -36,8 +36,9 @@ public class Property {
     private String description;
     private PropertyType propertyType;
 
-    @ManyToMany
-    private List<Tag> tags;
+
+
+    private PropertyStatus propertyStatus;
 
 
 }

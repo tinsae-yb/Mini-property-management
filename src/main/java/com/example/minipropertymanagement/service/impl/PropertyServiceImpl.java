@@ -3,8 +3,12 @@ package com.example.minipropertymanagement.service.impl;
 import com.amazonaws.services.kms.model.NotFoundException;
 import com.example.minipropertymanagement.domain.Property;
 import com.example.minipropertymanagement.domain.User;
+import com.example.minipropertymanagement.domain.enums.PropertyType;
 import com.example.minipropertymanagement.dto.request.PostPropertyRequest;
 import com.example.minipropertymanagement.dto.response.PostPropertyResponse;
+import com.example.minipropertymanagement.dto.response.PropertiesPaginatedResponse;
+import com.example.minipropertymanagement.filter.ModelMappingUtil;
+import com.example.minipropertymanagement.repo.PropertyCriteriaRepository;
 import com.example.minipropertymanagement.repo.PropertyRepository;
 import com.example.minipropertymanagement.repo.UserRepository;
 import com.example.minipropertymanagement.service.PropertyService;
@@ -12,10 +16,14 @@ import com.example.minipropertymanagement.util.AuthUtil;
 import com.example.minipropertymanagement.util.S3Util;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.Base64;
 
 @Service
@@ -32,6 +40,8 @@ public class PropertyServiceImpl implements PropertyService {
 
     private final AuthUtil authUtil;
 
+    private final PropertyCriteriaRepository propertyCriteriaRepository;
+    private final ModelMappingUtil modelMappingUtil;
 
     @Override
     public PostPropertyResponse postProperty(PostPropertyRequest postPropertyRequest) throws IOException {
@@ -40,7 +50,7 @@ public class PropertyServiceImpl implements PropertyService {
 
         User user = userRepository.findByEmail(username).orElseThrow(() -> new NotFoundException("User not found"));
         Property property = modelMapper.map(postPropertyRequest, Property.class);
-        property.setUser(user);
+        property.setOwner(user);
 
 
         String[] parts = postPropertyRequest.getImage().split(",");
@@ -49,9 +59,6 @@ public class PropertyServiceImpl implements PropertyService {
 
         byte[] imageBytes = Base64.getDecoder().decode(base64Data);
 
-
-        System.out.println("contentType: " + contentType);
-        System.out.println("imageBytes: " + imageBytes);
         String image = s3Util.uploadFile(imageBytes, contentType);
 
         property.setImage(image);
@@ -60,6 +67,16 @@ public class PropertyServiceImpl implements PropertyService {
 
         PostPropertyResponse postPropertyResponse = modelMapper.map(property, PostPropertyResponse.class);
         return postPropertyResponse;
+
+    }
+
+    @Override
+    public PropertiesPaginatedResponse getProperties(BigDecimal minPrice, BigDecimal maxPrice, Integer bedRooms, Integer bathRooms,  String zipCode, String city, String state, Pageable pageable) {
+//
+        Page<Property> properties = propertyCriteriaRepository.searchProperties(minPrice, maxPrice, bedRooms, bathRooms, zipCode, city, state, pageable);
+        PagedModel.PageMetadata pageMetadata = new PagedModel.PageMetadata(properties.getSize(), properties.getNumber() + 1, properties.getTotalElements(), properties.getTotalPages());
+
+        return modelMappingUtil.convertToPropertiesPaginatedResponse(pageMetadata, properties.getContent());
 
     }
 }

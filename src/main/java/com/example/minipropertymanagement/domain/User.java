@@ -23,11 +23,14 @@ public class User {
     private Role role;
 
 
-//    @Column(unique = true)
+
     private String email;
     private String password;
     private AccountStatus accountStatus;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "owner")
     private List<Property> properties;
+
+    @OneToMany(mappedBy = "customer")
+    private List<Offer> offers;
 }

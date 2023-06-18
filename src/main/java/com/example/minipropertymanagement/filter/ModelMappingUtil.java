@@ -1,7 +1,10 @@
 package com.example.minipropertymanagement.filter;
 
 
+import com.example.minipropertymanagement.domain.Property;
 import com.example.minipropertymanagement.domain.User;
+import com.example.minipropertymanagement.dto.response.PropertiesPaginatedResponse;
+import com.example.minipropertymanagement.dto.response.PropertySmallResponse;
 import com.example.minipropertymanagement.dto.response.UserPaginatedResponse;
 import com.example.minipropertymanagement.dto.response.UserSmallResponse;
 import lombok.RequiredArgsConstructor;
@@ -27,5 +30,14 @@ public class ModelMappingUtil {
          userPaginatedResponse.setPage(model.getMetadata());
             userPaginatedResponse.setUsers(model.getContent().stream().toList());
         return userPaginatedResponse;
+    }    public PropertiesPaginatedResponse convertToPropertiesPaginatedResponse(PagedModel.PageMetadata metadata, List<Property> properties) {
+        List<PropertySmallResponse> propertySmallResponses = properties.stream().map(p -> modelMapper.map(p, PropertySmallResponse.class)).toList();
+
+        PagedModel<PropertySmallResponse> model = PagedModel.of(propertySmallResponses, metadata);
+
+        PropertiesPaginatedResponse propertiesPaginatedResponse = new PropertiesPaginatedResponse();
+        propertiesPaginatedResponse.setPage(model.getMetadata());
+        propertiesPaginatedResponse.setProperties(model.getContent().stream().toList());
+        return propertiesPaginatedResponse;
     }
 }

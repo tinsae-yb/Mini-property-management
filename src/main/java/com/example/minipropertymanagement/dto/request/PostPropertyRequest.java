@@ -1,7 +1,6 @@
 package com.example.minipropertymanagement.dto.request;
 
-import com.example.minipropertymanagement.domain.Address;
-import com.example.minipropertymanagement.domain.Tag;
+
 import com.example.minipropertymanagement.domain.enums.PropertyType;
 import com.example.minipropertymanagement.dto.common.AddressDto;
 import com.example.minipropertymanagement.dto.common.TagDTO;
@@ -35,13 +34,13 @@ public class PostPropertyRequest {
 
     @Min(1)
     private int area;
-    @Min(1)
+    @Min(0)
     private int numberOfBedrooms;
-    @Min(1)
+    @Min(0)
     private int numberOfBathrooms;
     @Min(1)
     private int numberOfFloors;
-    @Min(1)
+    @Min(1990)
     private int yearBuilt;
     @NotNull
     private String description;
