@@ -44,7 +44,7 @@ public class Config {
             authorize.requestMatchers(HttpMethod.POST, "/api/v1/auth/**").permitAll();
             authorize.requestMatchers("/api/v1/admin**").hasAuthority(Role.ADMIN.getRole());
             authorize.requestMatchers(HttpMethod.GET, "/api/v1/users").authenticated();
-            authorize.requestMatchers(HttpMethod.POST, "/api/v1/property").hasAuthority(Role.OWNER.getRole());
+            authorize.requestMatchers(HttpMethod.POST, "/api/v1/properties").authenticated();
         }).sessionManagement(sessionManagementConfigurer -> sessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

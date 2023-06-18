@@ -6,6 +6,7 @@ import com.example.minipropertymanagement.exception.NotFoundException;
 import org.hibernate.sql.ast.SqlTreeCreationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -30,6 +31,18 @@ public class ControllerErrorAdvice {
             String errorMessage = error.getDefaultMessage();
             errors.put(fieldName, errorMessage);
         });
+        return errors;
+    }
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public Map<String, String> handleValidationExceptions(HttpMessageNotReadableException ex) {
+
+        Map<String, String> errors = new HashMap<>();
+
+
+        errors.put("message", ex.getMessage());
+
+
         return errors;
     }
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
