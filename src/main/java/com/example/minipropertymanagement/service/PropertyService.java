@@ -1,9 +1,9 @@
 package com.example.minipropertymanagement.service;
 
-import com.example.minipropertymanagement.domain.enums.PropertyType;
 import com.example.minipropertymanagement.dto.request.CreateOfferRequest;
 import com.example.minipropertymanagement.dto.request.PostPropertyRequest;
 import com.example.minipropertymanagement.dto.response.OfferResponse;
+import com.example.minipropertymanagement.dto.response.OffersResponse;
 import com.example.minipropertymanagement.dto.response.PostPropertyResponse;
 import com.example.minipropertymanagement.dto.response.PropertiesPaginatedResponse;
 import org.springframework.data.domain.Pageable;
@@ -18,4 +18,6 @@ public interface PropertyService {
     PropertiesPaginatedResponse getProperties(BigDecimal minPrice, BigDecimal maxPrice, Integer bedRooms, Integer bathRooms,  String zipCode, String city, String state, Pageable pageable) ;
 
     OfferResponse postOffer(Long propertyId, CreateOfferRequest createOfferRequest);
+
+    OffersResponse getPropertyOffers(Long propertyId);
 }

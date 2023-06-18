@@ -5,10 +5,11 @@ import com.example.minipropertymanagement.domain.Offer;
 import com.example.minipropertymanagement.domain.Property;
 import com.example.minipropertymanagement.domain.User;
 import com.example.minipropertymanagement.domain.enums.OfferStatus;
-import com.example.minipropertymanagement.domain.enums.PropertyType;
+import com.example.minipropertymanagement.domain.enums.Role;
 import com.example.minipropertymanagement.dto.request.CreateOfferRequest;
 import com.example.minipropertymanagement.dto.request.PostPropertyRequest;
 import com.example.minipropertymanagement.dto.response.OfferResponse;
+import com.example.minipropertymanagement.dto.response.OffersResponse;
 import com.example.minipropertymanagement.dto.response.PostPropertyResponse;
 import com.example.minipropertymanagement.dto.response.PropertiesPaginatedResponse;
 import com.example.minipropertymanagement.filter.ModelMappingUtil;
@@ -30,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Base64;
+import java.util.List;
 
 @Service
 @Transactional
@@ -49,6 +51,7 @@ public class PropertyServiceImpl implements PropertyService {
     private final ModelMappingUtil modelMappingUtil;
 
     private final OfferRepository offerRepository;
+
     @Override
     public PostPropertyResponse postProperty(PostPropertyRequest postPropertyRequest) throws IOException {
 
@@ -70,7 +73,7 @@ public class PropertyServiceImpl implements PropertyService {
     }
 
     @Override
-    public PropertiesPaginatedResponse getProperties(BigDecimal minPrice, BigDecimal maxPrice, Integer bedRooms, Integer bathRooms,  String zipCode, String city, String state, Pageable pageable) {
+    public PropertiesPaginatedResponse getProperties(BigDecimal minPrice, BigDecimal maxPrice, Integer bedRooms, Integer bathRooms, String zipCode, String city, String state, Pageable pageable) {
 //
         Page<Property> properties = propertyCriteriaRepository.searchProperties(minPrice, maxPrice, bedRooms, bathRooms, zipCode, city, state, pageable);
         PagedModel.PageMetadata pageMetadata = new PagedModel.PageMetadata(properties.getSize(), properties.getNumber() + 1, properties.getTotalElements(), properties.getTotalPages());
@@ -93,6 +96,28 @@ public class PropertyServiceImpl implements PropertyService {
 
         OfferResponse offerResponse = modelMapper.map(offer, OfferResponse.class);
         return offerResponse;
+
+    }
+
+    @Override
+    public OffersResponse getPropertyOffers(Long propertyId) {
+        String username = authUtil.getUsername();
+        User user = userRepository.findByEmail(username).orElseThrow(() -> new NotFoundException("User not found"));
+
+
+        List<Offer> offers = null;
+        if (user.getRole().equals(Role.USER)) {
+            offers = offerRepository.findByPropertyIdAndCustomerId(propertyId, user.getId());
+        }
+        if (user.getRole().equals(Role.OWNER)) {
+            offers = offerRepository.findByPropertyId(propertyId);
+        }
+
+        OffersResponse offersResponse = new OffersResponse();
+        offersResponse.setOffers(offers.stream().map(offer -> modelMapper.map(offer, OfferResponse.class)).toList());
+
+
+        return offersResponse;
 
     }
 }

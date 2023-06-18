@@ -5,6 +5,7 @@ import com.example.minipropertymanagement.domain.enums.PropertyType;
 import com.example.minipropertymanagement.dto.request.CreateOfferRequest;
 import com.example.minipropertymanagement.dto.request.PostPropertyRequest;
 import com.example.minipropertymanagement.dto.response.OfferResponse;
+import com.example.minipropertymanagement.dto.response.OffersResponse;
 import com.example.minipropertymanagement.dto.response.PostPropertyResponse;
 import com.example.minipropertymanagement.dto.response.PropertiesPaginatedResponse;
 import com.example.minipropertymanagement.service.PropertyService;
@@ -53,6 +54,12 @@ public class PropertyController {
     @PostMapping("/{propertyId}/offers")
     public OfferResponse postOffer(@PathVariable Long propertyId, @RequestBody CreateOfferRequest createOfferRequest) {
         return propertyService.postOffer(propertyId, createOfferRequest);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/{propertyId}/offers")
+    public OffersResponse getPropertyOffers(@PathVariable Long propertyId) {
+        return propertyService.getPropertyOffers(propertyId);
     }
 
 }
