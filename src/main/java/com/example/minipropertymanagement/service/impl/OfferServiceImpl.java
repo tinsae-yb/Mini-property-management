@@ -3,6 +3,7 @@ package com.example.minipropertymanagement.service.impl;
 import com.example.minipropertymanagement.domain.Offer;
 import com.example.minipropertymanagement.domain.User;
 import com.example.minipropertymanagement.domain.enums.OfferStatus;
+import com.example.minipropertymanagement.domain.enums.PropertyStatus;
 import com.example.minipropertymanagement.dto.response.OfferResponse;
 import com.example.minipropertymanagement.dto.response.OffersResponse;
 import com.example.minipropertymanagement.enums.OfferActions;
@@ -25,6 +26,7 @@ import java.util.List;
 @Transactional
 @RequiredArgsConstructor
 public class OfferServiceImpl implements OfferService {
+
 
     private final OfferRepository offerRepository;
     private final UserRepository userRepository;
@@ -51,6 +53,7 @@ public class OfferServiceImpl implements OfferService {
 
         if (offer.getProperty().getOwner().getId() == user.getId()) {
             if (action.equals(OfferActions.ACCEPT)) {
+                offer.getProperty().setPropertyStatus(PropertyStatus.PENDING);
                 offer.setOfferStatus(OfferStatus.ACCEPTED);
                 offerRepository.save(offer);
                 return modelMapper.map(offer, OfferResponse.class);
@@ -74,6 +77,5 @@ public class OfferServiceImpl implements OfferService {
         OffersResponse offersResponse = new OffersResponse();
         offersResponse.setOffers(offers);
         return offersResponse;
-
     }
 }

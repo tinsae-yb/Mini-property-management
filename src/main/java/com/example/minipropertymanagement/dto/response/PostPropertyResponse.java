@@ -4,6 +4,7 @@ import com.example.minipropertymanagement.domain.enums.PropertyType;
 import com.example.minipropertymanagement.dto.common.AddressDto;
 import com.example.minipropertymanagement.dto.common.TagDTO;
 import lombok.Data;
+import com.example.minipropertymanagement.domain.enums.PropertyStatus;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -35,7 +36,7 @@ public class PostPropertyResponse {
     private String description;
 
     private PropertyType propertyType;
-
+    private PropertyStatus propertyStatus;
 
     private List<TagDTO> tags;
 
