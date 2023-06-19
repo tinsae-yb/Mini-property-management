@@ -93,7 +93,6 @@ public class PropertyServiceImpl implements PropertyService {
         offer.setProperty(property);
         offer.setCustomer(user);
         offerRepository.save(offer);
-
         OfferResponse offerResponse = modelMapper.map(offer, OfferResponse.class);
         return offerResponse;
 

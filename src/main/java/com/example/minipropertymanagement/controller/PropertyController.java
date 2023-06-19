@@ -62,4 +62,7 @@ public class PropertyController {
         return propertyService.getPropertyOffers(propertyId);
     }
 
+
+
+
 }

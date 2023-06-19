@@ -1,6 +1,7 @@
 package com.example.minipropertymanagement.advice;
 
 
+import com.example.minipropertymanagement.exception.ForbiddenAccess;
 import com.example.minipropertymanagement.exception.InvalidCredential;
 import com.example.minipropertymanagement.exception.NotFoundException;
 import org.hibernate.sql.ast.SqlTreeCreationException;
@@ -33,6 +34,7 @@ public class ControllerErrorAdvice {
         });
         return errors;
     }
+
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public Map<String, String> handleValidationExceptions(HttpMessageNotReadableException ex) {
@@ -46,10 +48,10 @@ public class ControllerErrorAdvice {
         return errors;
     }
 
-//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-//    @ExceptionHandler(SqlTreeCreationException.class)
-//    public void handleSqlException(SqlTreeCreationException ex) {
-//    }
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(SqlTreeCreationException.class)
+    public void handleSqlException(SqlTreeCreationException ex) {
+    }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(DataIntegrityViolationException.class)
@@ -74,6 +76,14 @@ public class ControllerErrorAdvice {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(InvalidCredential.class)
     public Map<String, String> invalidCredentialExceptionHandler(NotFoundException ex) {
+        Map<String, String> errors = new HashMap<>();
+        errors.put("error", ex.getMessage());
+        return errors;
+    }
+
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler(ForbiddenAccess.class)
+    public Map<String, String> forbiddenExceptionHandler(ForbiddenAccess ex) {
         Map<String, String> errors = new HashMap<>();
         errors.put("error", ex.getMessage());
         return errors;

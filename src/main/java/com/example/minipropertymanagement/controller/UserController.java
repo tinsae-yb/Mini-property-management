@@ -19,9 +19,8 @@ public class UserController {
 
     private final UserService userService;
 
-
     @GetMapping("")
-    public UserPaginatedResponse getOwners(Pageable pageable, @RequestParam(required = false) AccountStatus status, @RequestParam(required = false) Role role) {
+    public UserPaginatedResponse getUsers(Pageable pageable, @RequestParam(required = false) AccountStatus status, @RequestParam(required = false) Role role) {
         return userService.getUsers(pageable, status, role);
     }
 }
