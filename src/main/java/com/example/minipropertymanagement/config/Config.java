@@ -48,6 +48,7 @@ public class Config {
             authorize.requestMatchers(HttpMethod.POST, "/api/v1/properties/*/offers").hasAuthority(Role.USER.getRole());
             authorize.requestMatchers(HttpMethod.GET, "/api/v1/properties/*/offers").hasAnyAuthority(Role.USER.getRole(), Role.OWNER.getRole());
             authorize.requestMatchers(HttpMethod.GET, "/api/v1/properties").permitAll();
+            authorize.requestMatchers(HttpMethod.GET, "/api/v1/properties/{propertyId}").permitAll();
         }).sessionManagement(sessionManagementConfigurer -> sessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

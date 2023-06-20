@@ -6,7 +6,7 @@ import com.example.minipropertymanagement.domain.User;
 import com.example.minipropertymanagement.dto.response.PropertiesPaginatedResponse;
 import com.example.minipropertymanagement.dto.response.PropertySmallResponse;
 import com.example.minipropertymanagement.dto.response.UserPaginatedResponse;
-import com.example.minipropertymanagement.dto.response.UserSmallResponse;
+import com.example.minipropertymanagement.dto.response.UserResponse;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.hateoas.PagedModel;
@@ -22,9 +22,9 @@ public class ModelMappingUtil {
 
 
     public UserPaginatedResponse convertToUserPaginatedResponse(PagedModel.PageMetadata metadata, List<User> users) {
-        List<UserSmallResponse> userSmallResponses = users.stream().map(user -> modelMapper.map(user, UserSmallResponse.class)).collect(Collectors.toList());
+        List<UserResponse> userSmallResponses = users.stream().map(user -> modelMapper.map(user, UserResponse.class)).collect(Collectors.toList());
 
-        PagedModel<UserSmallResponse> model = PagedModel.of(userSmallResponses, metadata);
+        PagedModel<UserResponse> model = PagedModel.of(userSmallResponses, metadata);
 
        UserPaginatedResponse userPaginatedResponse = new UserPaginatedResponse();
          userPaginatedResponse.setPage(model.getMetadata());

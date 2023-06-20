@@ -8,5 +8,5 @@ import java.util.List;
 @Data
 public class UserPaginatedResponse {
     private PagedModel.PageMetadata page;
-    private List<UserSmallResponse> users;
+    private List<UserResponse> users;
 }

@@ -16,7 +16,7 @@ public class OfferResponse {
 
     private OfferStatus offerStatus;
 
-    private UserSmallResponse customer;
+    private UserResponse customer;
 
     private PropertySmallResponse property;
 

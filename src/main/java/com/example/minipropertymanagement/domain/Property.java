@@ -21,7 +21,7 @@ public class Property {
 
     private Address address;
 
-    @OneToMany(mappedBy = "property")
+    @OneToMany(mappedBy = "property", fetch = FetchType.LAZY    )
     private List<Offer> offers;
 
     @ManyToOne

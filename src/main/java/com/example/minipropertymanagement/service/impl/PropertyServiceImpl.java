@@ -8,7 +8,7 @@ import com.example.minipropertymanagement.dto.request.CreateOfferRequest;
 import com.example.minipropertymanagement.dto.request.PostPropertyRequest;
 import com.example.minipropertymanagement.dto.response.OfferResponse;
 import com.example.minipropertymanagement.dto.response.OffersResponse;
-import com.example.minipropertymanagement.dto.response.PostPropertyResponse;
+import com.example.minipropertymanagement.dto.response.PropertyResponse;
 import com.example.minipropertymanagement.dto.response.PropertiesPaginatedResponse;
 import com.example.minipropertymanagement.enums.OfferStatus;
 import com.example.minipropertymanagement.enums.PropertyStatus;
@@ -55,7 +55,7 @@ public class PropertyServiceImpl implements PropertyService {
     private final OfferRepository offerRepository;
 
     @Override
-    public PostPropertyResponse postProperty(PostPropertyRequest postPropertyRequest) throws IOException {
+    public PropertyResponse postProperty(PostPropertyRequest postPropertyRequest) throws IOException {
 
         String username = authUtil.getUsername();
         User user = userRepository.findByEmail(username).orElseThrow(() -> new NotFoundException("User not found"));
@@ -70,7 +70,7 @@ public class PropertyServiceImpl implements PropertyService {
         property.setImage(image);
         propertyRepository.save(property);
 
-        PostPropertyResponse postPropertyResponse = modelMapper.map(property, PostPropertyResponse.class);
+        PropertyResponse postPropertyResponse = modelMapper.map(property, PropertyResponse.class);
         return postPropertyResponse;
 
     }
@@ -79,17 +79,15 @@ public class PropertyServiceImpl implements PropertyService {
     public PropertiesPaginatedResponse getProperties(BigDecimal minPrice, BigDecimal maxPrice, Integer bedRooms, Integer bathRooms, String zipCode, String city, String state, PropertyType propertyType, Pageable pageable) {
 //
 
-        String username = null;
         User user = null;
         try {
-            username = authUtil.getUsername();
+            String username = authUtil.getUsername();
             user = userRepository.findByEmail(username).orElseThrow(() -> new NotFoundException("User not found"));
         } catch (Exception e) {
-            username = null;
         }
 
 
-        Page<Property> properties = propertyCriteriaRepository.searchProperties(  minPrice, maxPrice, bedRooms, bathRooms, zipCode, city, state,propertyType ,pageable, user==null?null:user.getId());
+        Page<Property> properties = propertyCriteriaRepository.searchProperties(minPrice, maxPrice, bedRooms, bathRooms, zipCode, city, state, propertyType, pageable, user == null ? null : user.getId());
         PagedModel.PageMetadata pageMetadata = new PagedModel.PageMetadata(properties.getSize(), properties.getNumber() + 1, properties.getTotalElements(), properties.getTotalPages());
         return modelMappingUtil.convertToPropertiesPaginatedResponse(pageMetadata, properties.getContent());
 
@@ -131,5 +129,15 @@ public class PropertyServiceImpl implements PropertyService {
 
         return offersResponse;
 
+    }
+
+    @Override
+    public PropertyResponse getProperty(Long propertyId) {
+
+        Property property = propertyRepository.findById(propertyId).orElseThrow(() -> new NotFoundException("Property not found"));
+
+        PropertyResponse propertyResponse = modelMapper.map(property, PropertyResponse.class);
+
+        return propertyResponse;
     }
 }

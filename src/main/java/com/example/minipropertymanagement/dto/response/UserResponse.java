@@ -6,7 +6,7 @@ import com.example.minipropertymanagement.enums.Role;
 import lombok.Data;
 
 @Data
-public class UserSmallResponse {
+public class UserResponse {
     private Long id;
     private String email;
     private String firstName;

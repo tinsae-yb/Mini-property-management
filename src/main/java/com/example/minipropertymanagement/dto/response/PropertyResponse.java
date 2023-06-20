@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Data
-public class PostPropertyResponse {
+public class PropertyResponse {
 
     private long id;
 
@@ -38,6 +38,8 @@ public class PostPropertyResponse {
 
     private PropertyType propertyType;
     private PropertyStatus propertyStatus;
+
+    private UserResponse owner;
 
     private List<TagDTO> tags;
 

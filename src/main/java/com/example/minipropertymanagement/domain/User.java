@@ -28,9 +28,9 @@ public class User {
     private String password;
     private AccountStatus accountStatus;
 
-    @OneToMany(mappedBy = "owner")
+    @OneToMany(mappedBy = "owner",fetch = FetchType.LAZY)
     private List<Property> properties;
 
-    @OneToMany(mappedBy = "customer")
+    @OneToMany(mappedBy = "customer",fetch = FetchType.LAZY)
     private List<Offer> offers;
 }

@@ -5,11 +5,10 @@ import com.example.minipropertymanagement.dto.request.CreateOfferRequest;
 import com.example.minipropertymanagement.dto.request.PostPropertyRequest;
 import com.example.minipropertymanagement.dto.response.OfferResponse;
 import com.example.minipropertymanagement.dto.response.OffersResponse;
-import com.example.minipropertymanagement.dto.response.PostPropertyResponse;
+import com.example.minipropertymanagement.dto.response.PropertyResponse;
 import com.example.minipropertymanagement.dto.response.PropertiesPaginatedResponse;
 import com.example.minipropertymanagement.enums.PropertyType;
 import com.example.minipropertymanagement.service.PropertyService;
-import com.example.minipropertymanagement.util.S3Util;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.Base64;
 
 @RestController
 @RequestMapping("/api/v1/properties")
@@ -30,7 +28,7 @@ public class PropertyController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public PostPropertyResponse postProperty(@RequestBody @Valid PostPropertyRequest postPropertyRequest) throws IOException {
+    public PropertyResponse postProperty(@RequestBody @Valid PostPropertyRequest postPropertyRequest) throws IOException {
         return propertyService.postProperty(postPropertyRequest);
     }
 
@@ -48,6 +46,13 @@ public class PropertyController {
             @RequestParam(required = false) PropertyType propertyType,
             Pageable pageable) {
         return propertyService.getProperties(minPrice, maxPrice, bedRooms, bathRooms, zipCode, city, state,propertyType, pageable);
+    }
+
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/{propertyId}")
+    public PropertyResponse getProperty(@PathVariable Long propertyId) {
+        return propertyService.getProperty(propertyId);
     }
 
 
