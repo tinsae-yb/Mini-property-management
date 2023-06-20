@@ -7,7 +7,14 @@ import com.example.minipropertymanagement.exception.InvalidCredential;
 import com.example.minipropertymanagement.exception.NotFoundException;
 
 public interface OfferService {
-    OfferResponse updateOffer(Long offerId, OfferActions action) throws NotFoundException, InvalidCredential;
 
     OffersResponse getOffers() throws InvalidCredential;
+
+    OfferResponse acceptOffer(Long offerId) throws InvalidCredential, NotFoundException;
+
+    OfferResponse rejectOffer(Long offerId) throws InvalidCredential, NotFoundException;
+
+    OfferResponse cancelOffer(Long offerId) throws InvalidCredential, NotFoundException;
+
+    OfferResponse acceptContingent(Long offerId) throws InvalidCredential, NotFoundException;
 }

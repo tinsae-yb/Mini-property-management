@@ -28,7 +28,23 @@ public class OfferController {
     @ResponseStatus(HttpStatus.ACCEPTED)
     @PutMapping(value = "/offers/{offerId}", params = {"action"})
     public OfferResponse updateOffer(@PathVariable Long offerId, @RequestParam OfferActions action) throws InvalidCredential, NotFoundException {
-        return offerService.updateOffer(offerId, action);
+
+        if(action.equals(OfferActions.ACCEPT_CONTINGENT)){
+            return offerService.acceptContingent(offerId);
+        }
+        if(action.equals(OfferActions.CANCEL)){
+            return offerService.cancelOffer(offerId);
+        }
+        if(action.equals(OfferActions.REJECT)){
+            return offerService.rejectOffer(offerId);
+        }
+        if(action.equals(OfferActions.ACCEPT)){
+            return offerService.acceptOffer(offerId);
+        }
+        return null;
+
+
+
     }
 
 

@@ -36,38 +36,6 @@ public class OfferServiceImpl implements OfferService {
 
     private final AuthUtil authUtil;
 
-    @Override
-    public OfferResponse updateOffer(Long offerId, OfferActions action) throws NotFoundException, InvalidCredential {
-
-        Offer offer = offerRepository.findById(offerId).orElseThrow(() -> new NotFoundException("Offer not found"));
-        String username = authUtil.getUsername();
-        User user = userRepository.findByEmail(username).orElseThrow(() -> new InvalidCredential("User not found"));
-
-        if (action.equals(OfferActions.CANCEL)) {
-            if (offer.getCustomer().getId() == user.getId()) {
-                offer.setOfferStatus(OfferStatus.CANCELLED);
-                offerRepository.save(offer);
-                return modelMapper.map(offer, OfferResponse.class);
-            }
-        }
-
-        if (offer.getProperty().getOwner().getId() == user.getId()) {
-            if (action.equals(OfferActions.ACCEPT)) {
-                offer.getProperty().setPropertyStatus(PropertyStatus.PENDING);
-                offer.setOfferStatus(OfferStatus.ACCEPTED);
-                offerRepository.save(offer);
-                return modelMapper.map(offer, OfferResponse.class);
-            }
-            if (action.equals(OfferActions.REJECT)) {
-                offer.setOfferStatus(OfferStatus.REJECTED);
-                offerRepository.save(offer);
-                return modelMapper.map(offer, OfferResponse.class);
-            }
-        }
-        throw new ForbiddenAccess("You are not allowed to modify this offer");
-
-
-    }
 
     @Override
     public OffersResponse getOffers() throws InvalidCredential {
@@ -77,5 +45,129 @@ public class OfferServiceImpl implements OfferService {
         OffersResponse offersResponse = new OffersResponse();
         offersResponse.setOffers(offers);
         return offersResponse;
+    }
+
+    @Override
+    public OfferResponse acceptOffer(Long offerId) throws InvalidCredential, NotFoundException {
+
+        String username = authUtil.getUsername();
+        User user = userRepository.findByEmail(username).orElseThrow(() -> new InvalidCredential("User not found"));
+
+        Offer offer = offerRepository.findById(offerId).orElseThrow(() -> new NotFoundException("Offer not found"));
+        OfferStatus offerStatus = offer.getOfferStatus();
+        PropertyStatus propertyStatus = offer.getProperty().getPropertyStatus();
+
+        boolean isOwner = offer.getProperty().getOwner().getId() == user.getId();
+        if (!isOwner) {
+            throw new ForbiddenAccess("Only owner can accept offer");
+        }
+        if (propertyStatus.equals(PropertyStatus.SOLD)) {
+            throw new ForbiddenAccess("Property is already sold");
+        }
+        if (propertyStatus.equals(PropertyStatus.CONTINGENT)) {
+            throw new ForbiddenAccess("Property is already contingent");
+        }
+        if (offerStatus.equals(OfferStatus.CANCELLED)) {
+            throw new ForbiddenAccess("Offer is already cancelled");
+        }
+        offer.setOfferStatus(OfferStatus.ACCEPTED);
+        offer.getProperty().setPropertyStatus(PropertyStatus.CONTINGENT);
+
+        OfferResponse offerResponse = modelMapper.map(offer, OfferResponse.class);
+        return offerResponse;
+    }
+
+    @Override
+    public OfferResponse rejectOffer(Long offerId) throws InvalidCredential, NotFoundException {
+
+        String username = authUtil.getUsername();
+        User user = userRepository.findByEmail(username).orElseThrow(() -> new InvalidCredential("User not found"));
+        Offer offer = offerRepository.findById(offerId).orElseThrow(() -> new NotFoundException("Offer not found"));
+        OfferStatus offerStatus = offer.getOfferStatus();
+        PropertyStatus propertyStatus = offer.getProperty().getPropertyStatus();
+        boolean isOwner = offer.getProperty().getOwner().getId() == user.getId();
+
+        if (!isOwner) {
+            throw new ForbiddenAccess("Only owner can reject offer");
+        }
+
+        if (propertyStatus.equals(PropertyStatus.SOLD)) {
+            throw new ForbiddenAccess("Property is already sold");
+        }
+
+        if (propertyStatus.equals(PropertyStatus.CONTINGENT) || propertyStatus.equals(PropertyStatus.PENDING)) {
+            offer.setOfferStatus(OfferStatus.REJECTED);
+            offer.getProperty().setPropertyStatus(PropertyStatus.AVAILABLE);
+        }
+        if (offerStatus.equals(OfferStatus.CANCELLED)) {
+            throw new ForbiddenAccess("Offer is already cancelled");
+        }
+
+        OfferResponse offerResponse = modelMapper.map(offer, OfferResponse.class);
+        return offerResponse;
+
+
+    }
+
+    @Override
+    public OfferResponse cancelOffer(Long offerId) throws InvalidCredential, NotFoundException {
+        String username = authUtil.getUsername();
+        User user = userRepository.findByEmail(username).orElseThrow(() -> new InvalidCredential("User not found"));
+        Offer offer = offerRepository.findById(offerId).orElseThrow(() -> new NotFoundException("Offer not found"));
+        OfferStatus offerStatus = offer.getOfferStatus();
+        PropertyStatus propertyStatus = offer.getProperty().getPropertyStatus();
+        boolean isOwner = offer.getProperty().getOwner().getId() == user.getId();
+
+        if (isOwner) {
+            throw new ForbiddenAccess("Only customer can cancel offer");
+        }
+
+        if (propertyStatus.equals(PropertyStatus.SOLD) || propertyStatus.equals(PropertyStatus.CONTINGENT)) {
+            throw new ForbiddenAccess("Property is already sold or contingent");
+        }
+
+
+        if (offerStatus.equals(OfferStatus.ACCEPTED)) {
+            offer.setOfferStatus(OfferStatus.CANCELLED);
+            List<Offer> offers = offerRepository.findByPropertyId(offer.getProperty().getId());
+            boolean isOtherOfferAccepted = offers.stream().anyMatch(offer1 -> offer1.getOfferStatus().equals(OfferStatus.ACCEPTED));
+            if (!isOtherOfferAccepted) {
+                offer.getProperty().setPropertyStatus(PropertyStatus.AVAILABLE);
+            }
+        }
+        if (offerStatus.equals(OfferStatus.REJECTED)) {
+            throw new ForbiddenAccess("Offer is already rejected");
+        }
+
+        OfferResponse offerResponse = modelMapper.map(offer, OfferResponse.class);
+        return offerResponse;
+    }
+
+    @Override
+    public OfferResponse acceptContingent(Long offerId) throws InvalidCredential, NotFoundException {
+
+        String username = authUtil.getUsername();
+        User user = userRepository.findByEmail(username).orElseThrow(() -> new InvalidCredential("User not found"));
+        Offer offer = offerRepository.findById(offerId).orElseThrow(() -> new NotFoundException("Offer not found"));
+        OfferStatus offerStatus = offer.getOfferStatus();
+        PropertyStatus propertyStatus = offer.getProperty().getPropertyStatus();
+        boolean isOwner = offer.getProperty().getOwner().getId() == user.getId();
+
+
+        if (!propertyStatus.equals(PropertyStatus.CONTINGENT)) {
+            throw new ForbiddenAccess("Property is not contingent");
+        }
+
+        if (isOwner) {
+            offer.setAcceptedByOwner(true);
+        } else {
+            offer.setAcceptedByCustomer(true);
+        }
+        offer.getProperty().setPropertyStatus(PropertyStatus.SOLD);
+
+
+        OfferResponse offerResponse = modelMapper.map(offer, OfferResponse.class);
+        return offerResponse;
+
     }
 }

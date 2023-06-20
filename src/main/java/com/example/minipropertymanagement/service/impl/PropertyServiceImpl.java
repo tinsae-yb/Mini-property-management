@@ -15,6 +15,7 @@ import com.example.minipropertymanagement.enums.OfferStatus;
 import com.example.minipropertymanagement.enums.PropertyStatus;
 import com.example.minipropertymanagement.enums.PropertyType;
 import com.example.minipropertymanagement.enums.Role;
+import com.example.minipropertymanagement.exception.ForbiddenAccess;
 import com.example.minipropertymanagement.filter.ModelMappingUtil;
 import com.example.minipropertymanagement.repo.*;
 import com.example.minipropertymanagement.service.PropertyService;
@@ -98,13 +99,23 @@ public class PropertyServiceImpl implements PropertyService {
         String username = authUtil.getUsername();
         User user = userRepository.findByEmail(username).orElseThrow(() -> new NotFoundException("User not found"));
         Property property = propertyRepository.findById(propertyId).orElseThrow(() -> new NotFoundException("Property not found"));
+        if(property.getPropertyStatus().equals(PropertyStatus.SOLD)){
+            throw new ForbiddenAccess("Property is sold");
+        }
+        if(property.getPropertyStatus().equals(PropertyStatus.CONTINGENT)){
+            throw new ForbiddenAccess("Property is contingent");
+        }
+
         Offer offer = new Offer();
         offer.setOfferPrice(createOfferRequest.getOfferPrice());
         offer.setOfferStatus(OfferStatus.PENDING);
         offer.setProperty(property);
         offer.setCustomer(user);
         offerRepository.save(offer);
+        property.setPropertyStatus(PropertyStatus.PENDING);
         OfferResponse offerResponse = modelMapper.map(offer, OfferResponse.class);
+
+
         return offerResponse;
 
     }

@@ -19,5 +19,7 @@ public class OfferResponse {
     private UserResponse customer;
 
     private PropertySmallResponse property;
+    private boolean acceptedByOwner;
+    private boolean acceptedByCustomer;
 
 }
