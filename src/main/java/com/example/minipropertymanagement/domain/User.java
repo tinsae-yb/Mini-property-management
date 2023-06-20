@@ -1,8 +1,8 @@
 package com.example.minipropertymanagement.domain;
 
 
-import com.example.minipropertymanagement.domain.enums.AccountStatus;
-import com.example.minipropertymanagement.domain.enums.Role;
+import com.example.minipropertymanagement.enums.AccountStatus;
+import com.example.minipropertymanagement.enums.Role;
 import jakarta.persistence.*;
 import lombok.Data;
 

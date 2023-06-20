@@ -1,9 +1,9 @@
 package com.example.minipropertymanagement.service.impl;
 
 import com.example.minipropertymanagement.domain.User;
-import com.example.minipropertymanagement.domain.enums.AccountStatus;
-import com.example.minipropertymanagement.domain.enums.Role;
 import com.example.minipropertymanagement.dto.response.UserPaginatedResponse;
+import com.example.minipropertymanagement.enums.AccountStatus;
+import com.example.minipropertymanagement.enums.Role;
 import com.example.minipropertymanagement.filter.ModelMappingUtil;
 import com.example.minipropertymanagement.repo.UserCriteriaRepository;
 import com.example.minipropertymanagement.repo.UserRepository;

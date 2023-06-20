@@ -48,10 +48,14 @@ public class ControllerErrorAdvice {
         return errors;
     }
 
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ExceptionHandler(SqlTreeCreationException.class)
-    public void handleSqlException(SqlTreeCreationException ex) {
-    }
+//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+//    @ExceptionHandler(SqlTreeCreationException.class)
+//    public void handleSqlException(SqlTreeCreationException ex) {
+//
+//        System.out.println("ex = " + ex.getMessage());
+//        System.out.println("ex = " + ex.getStackTrace());
+//
+//    }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(DataIntegrityViolationException.class)

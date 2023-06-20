@@ -2,11 +2,11 @@ package com.example.minipropertymanagement.service.impl;
 
 import com.example.minipropertymanagement.domain.Offer;
 import com.example.minipropertymanagement.domain.User;
-import com.example.minipropertymanagement.domain.enums.OfferStatus;
-import com.example.minipropertymanagement.domain.enums.PropertyStatus;
 import com.example.minipropertymanagement.dto.response.OfferResponse;
 import com.example.minipropertymanagement.dto.response.OffersResponse;
 import com.example.minipropertymanagement.enums.OfferActions;
+import com.example.minipropertymanagement.enums.OfferStatus;
+import com.example.minipropertymanagement.enums.PropertyStatus;
 import com.example.minipropertymanagement.exception.ForbiddenAccess;
 import com.example.minipropertymanagement.exception.InvalidCredential;
 import com.example.minipropertymanagement.exception.NotFoundException;

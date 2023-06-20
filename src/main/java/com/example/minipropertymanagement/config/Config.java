@@ -1,7 +1,7 @@
 package com.example.minipropertymanagement.config;
 
 
-import com.example.minipropertymanagement.domain.enums.Role;
+import com.example.minipropertymanagement.enums.Role;
 import com.example.minipropertymanagement.filter.JWTFilter;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;

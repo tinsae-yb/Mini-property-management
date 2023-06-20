@@ -4,14 +4,16 @@ import com.amazonaws.services.kms.model.NotFoundException;
 import com.example.minipropertymanagement.domain.Offer;
 import com.example.minipropertymanagement.domain.Property;
 import com.example.minipropertymanagement.domain.User;
-import com.example.minipropertymanagement.domain.enums.OfferStatus;
-import com.example.minipropertymanagement.domain.enums.Role;
 import com.example.minipropertymanagement.dto.request.CreateOfferRequest;
 import com.example.minipropertymanagement.dto.request.PostPropertyRequest;
 import com.example.minipropertymanagement.dto.response.OfferResponse;
 import com.example.minipropertymanagement.dto.response.OffersResponse;
 import com.example.minipropertymanagement.dto.response.PostPropertyResponse;
 import com.example.minipropertymanagement.dto.response.PropertiesPaginatedResponse;
+import com.example.minipropertymanagement.enums.OfferStatus;
+import com.example.minipropertymanagement.enums.PropertyStatus;
+import com.example.minipropertymanagement.enums.PropertyType;
+import com.example.minipropertymanagement.enums.Role;
 import com.example.minipropertymanagement.filter.ModelMappingUtil;
 import com.example.minipropertymanagement.repo.OfferRepository;
 import com.example.minipropertymanagement.repo.PropertyCriteriaRepository;
@@ -59,6 +61,7 @@ public class PropertyServiceImpl implements PropertyService {
         User user = userRepository.findByEmail(username).orElseThrow(() -> new NotFoundException("User not found"));
         Property property = modelMapper.map(postPropertyRequest, Property.class);
         property.setOwner(user);
+        property.setPropertyStatus(PropertyStatus.AVAILABLE);
         String[] parts = postPropertyRequest.getImage().split(",");
         String contentType = parts[0].split(":")[1].split(";")[0];
         String base64Data = parts[1];
@@ -73,11 +76,21 @@ public class PropertyServiceImpl implements PropertyService {
     }
 
     @Override
-    public PropertiesPaginatedResponse getProperties(BigDecimal minPrice, BigDecimal maxPrice, Integer bedRooms, Integer bathRooms, String zipCode, String city, String state, Pageable pageable) {
+    public PropertiesPaginatedResponse getProperties(BigDecimal minPrice, BigDecimal maxPrice, Integer bedRooms, Integer bathRooms, String zipCode, String city, String state, PropertyType propertyType, Pageable pageable) {
 //
-        Page<Property> properties = propertyCriteriaRepository.searchProperties(minPrice, maxPrice, bedRooms, bathRooms, zipCode, city, state, pageable);
-        PagedModel.PageMetadata pageMetadata = new PagedModel.PageMetadata(properties.getSize(), properties.getNumber() + 1, properties.getTotalElements(), properties.getTotalPages());
 
+        String username = null;
+        User user = null;
+        try {
+            username = authUtil.getUsername();
+            user = userRepository.findByEmail(username).orElseThrow(() -> new NotFoundException("User not found"));
+        } catch (Exception e) {
+            username = null;
+        }
+
+
+        Page<Property> properties = propertyCriteriaRepository.searchProperties(  minPrice, maxPrice, bedRooms, bathRooms, zipCode, city, state,propertyType ,pageable, user==null?null:user.getId());
+        PagedModel.PageMetadata pageMetadata = new PagedModel.PageMetadata(properties.getSize(), properties.getNumber() + 1, properties.getTotalElements(), properties.getTotalPages());
         return modelMappingUtil.convertToPropertiesPaginatedResponse(pageMetadata, properties.getContent());
 
     }

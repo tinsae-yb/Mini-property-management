@@ -1,9 +1,9 @@
 package com.example.minipropertymanagement.controller;
 
 
-import com.example.minipropertymanagement.domain.enums.AccountStatus;
-import com.example.minipropertymanagement.domain.enums.Role;
 import com.example.minipropertymanagement.dto.response.UserPaginatedResponse;
+import com.example.minipropertymanagement.enums.AccountStatus;
+import com.example.minipropertymanagement.enums.Role;
 import com.example.minipropertymanagement.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;

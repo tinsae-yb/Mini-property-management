@@ -2,7 +2,7 @@ package com.example.minipropertymanagement.service.impl;
 
 
 import com.example.minipropertymanagement.domain.User;
-import com.example.minipropertymanagement.domain.enums.AccountStatus;
+import com.example.minipropertymanagement.enums.AccountStatus;
 import com.example.minipropertymanagement.exception.NotFoundException;
 import com.example.minipropertymanagement.repo.UserRepository;
 import com.example.minipropertymanagement.service.AdminService;

@@ -2,9 +2,7 @@ package com.example.minipropertymanagement.repo;
 
 import com.example.minipropertymanagement.domain.Property;
 import com.example.minipropertymanagement.domain.User;
-import com.example.minipropertymanagement.domain.enums.AccountStatus;
-import com.example.minipropertymanagement.domain.enums.PropertyType;
-import com.example.minipropertymanagement.domain.enums.Role;
+import com.example.minipropertymanagement.enums.PropertyType;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
@@ -30,34 +28,91 @@ public class PropertyCriteriaRepository {
     private final EntityManager entityManager;
 
 
-    public Page<Property> searchProperties(BigDecimal minPrice, BigDecimal maxPrice, Integer bedRooms, Integer bathRooms, String zipCode, String city, String state, Pageable pageable) {
+    public Page<Property> searchProperties(BigDecimal minPrice, BigDecimal maxPrice, Integer bedRooms, Integer bathRooms, String zipCode, String city, String state, PropertyType propertyType, Pageable pageable, Long userId) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Property> query = cb.createQuery(Property.class);
+        Root<Property> root = query.from(Property.class);
+
+        // Create predicates for the main query
+        List<Predicate> predicates = buildPredicates(cb, root, minPrice, maxPrice, bedRooms, bathRooms, zipCode, city, state,propertyType, userId);
+
+        query.where(predicates.toArray(new Predicate[0]));
+
+        // Count query for total results
+        CriteriaBuilder countBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Long> countQuery = countBuilder.createQuery(Long.class);
+        Root<Property> countRoot = countQuery.from(Property.class);
+
+        // Create predicates for the count query
+        List<Predicate> countPredicates = buildPredicates(countBuilder, countRoot, minPrice, maxPrice, bedRooms, bathRooms, zipCode, city, state,propertyType, userId);
+
+        countQuery.select(countBuilder.count(countRoot));
+        countQuery.where(countPredicates.toArray(new Predicate[0]));
+        Long totalResults = entityManager.createQuery(countQuery).getSingleResult();
+
+        // Pagination
+        query.orderBy(cb.asc(root.get("id"))); // Order by property ID (adjust as needed)
+
+        TypedQuery<Property> typedQuery = entityManager.createQuery(query);
+        typedQuery.setFirstResult((int) pageable.getOffset());
+        typedQuery.setMaxResults(pageable.getPageSize());
+
+        List<Property> properties = typedQuery.getResultList();
+
+        return new PageImpl<>(properties, pageable, totalResults);
+    }
 
 
-        System.out.println("minPrice = " + minPrice);
+    private List<Predicate> buildPredicates(CriteriaBuilder cb, Root<Property> root, BigDecimal minPrice, BigDecimal maxPrice, Integer bedRooms, Integer bathRooms, String zipCode, String city, String state, PropertyType propertyType, Long userId) {
+        List<Predicate> predicates = new ArrayList<>();
 
-        String whereClause = " where ";
-        if (minPrice != null) whereClause += " p.price >  " + minPrice;
-        if (maxPrice != null) whereClause += " p.price <  " + maxPrice;
-        if (bedRooms != null) whereClause += " p.numberOfBedrooms = " + bedRooms;
-        if (bathRooms != null) whereClause += " p.numberOfBathrooms =  " + bathRooms;
-        if (zipCode != null) whereClause += " p.address.zip =  " + zipCode;
-        if (city != null) whereClause += " p.address.city like " + "%" + city + "%";
-        if (state != null) whereClause += " p.address.state =  " + state;
+        if (minPrice != null) {
+            predicates.add(cb.greaterThanOrEqualTo(root.get("price"), minPrice));
+        }
+
+        // Maximum price
+        if (maxPrice != null) {
+            predicates.add(cb.lessThanOrEqualTo(root.get("price"), maxPrice));
+        }
+
+        // Bedrooms
+        if (bedRooms != null) {
+            predicates.add(cb.equal(root.get("numberOfBedrooms"), bedRooms));
+        }
+
+        // Bathrooms
+        if (bathRooms != null) {
+            predicates.add(cb.equal(root.get("numberOfBathrooms"), bathRooms));
+        }
+
+        // Zip code
+        if (zipCode != null && !zipCode.isEmpty()) {
+            predicates.add(cb.equal(root.get("address").get("zipCode"), zipCode));
+        }
+
+        // City
+        if (city != null && !city.isEmpty()) {
+            predicates.add(cb.equal(root.get("address").get("city"), city));
+        }
 
 
-        if (whereClause.equals(" where ")) whereClause = "";
+        // State
+        if (state != null && !state.isEmpty()) {
+            predicates.add(cb.equal(root.get("address").get("state"), state));
+        }
 
-        Query countQuery = entityManager.createQuery("select count(p) from Property p " + whereClause);
-        Query selectQuery = entityManager.createQuery("select p from Property p " + whereClause);
+        // Property Type
+        if (propertyType != null) {
+            predicates.add(cb.equal(root.get("propertyType"), propertyType));
+        }
 
+        // User Id
+        if (userId != null) {
+            predicates.add(cb.equal(root.get("owner").get("id"), userId));
+        }
 
-        Long totalRecords = (Long) countQuery.getSingleResult();
+        return predicates;
 
-        selectQuery.setFirstResult((int) pageable.getOffset());
-        selectQuery.setMaxResults(pageable.getPageSize());
-        List<Property> properties = selectQuery.getResultList();
-
-        return new PageImpl<>(properties, pageable, totalRecords);
-
+        // State
     }
 }

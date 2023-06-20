@@ -1,12 +1,7 @@
 package com.example.minipropertymanagement.dto.response;
 
-import com.example.minipropertymanagement.domain.Property;
-import com.example.minipropertymanagement.domain.User;
-import com.example.minipropertymanagement.domain.enums.OfferStatus;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+
+import com.example.minipropertymanagement.enums.OfferStatus;
 import lombok.Data;
 
 import java.math.BigDecimal;

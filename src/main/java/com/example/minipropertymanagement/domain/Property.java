@@ -1,8 +1,8 @@
 package com.example.minipropertymanagement.domain;
 
 
-import com.example.minipropertymanagement.domain.enums.PropertyStatus;
-import com.example.minipropertymanagement.domain.enums.PropertyType;
+import com.example.minipropertymanagement.enums.PropertyStatus;
+import com.example.minipropertymanagement.enums.PropertyType;
 import jakarta.persistence.*;
 import lombok.Data;
 

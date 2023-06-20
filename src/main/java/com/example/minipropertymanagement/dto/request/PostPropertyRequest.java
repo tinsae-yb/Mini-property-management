@@ -1,9 +1,9 @@
 package com.example.minipropertymanagement.dto.request;
 
 
-import com.example.minipropertymanagement.domain.enums.PropertyType;
 import com.example.minipropertymanagement.dto.common.AddressDto;
 import com.example.minipropertymanagement.dto.common.TagDTO;
+import com.example.minipropertymanagement.enums.PropertyType;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;

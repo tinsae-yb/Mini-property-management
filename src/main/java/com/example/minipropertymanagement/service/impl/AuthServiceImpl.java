@@ -1,13 +1,13 @@
 package com.example.minipropertymanagement.service.impl;
 
 import com.example.minipropertymanagement.domain.User;
-import com.example.minipropertymanagement.domain.enums.AccountStatus;
-import com.example.minipropertymanagement.domain.enums.Role;
 import com.example.minipropertymanagement.dto.request.CreateUserRequest;
 import com.example.minipropertymanagement.dto.request.LoginRequest;
 import com.example.minipropertymanagement.dto.request.RefreshTokenRequest;
 import com.example.minipropertymanagement.dto.response.LoginResponse;
 import com.example.minipropertymanagement.dto.response.RefreshTokenResponse;
+import com.example.minipropertymanagement.enums.AccountStatus;
+import com.example.minipropertymanagement.enums.Role;
 import com.example.minipropertymanagement.exception.InvalidCredential;
 import com.example.minipropertymanagement.repo.UserRepository;
 import com.example.minipropertymanagement.service.AuthService;

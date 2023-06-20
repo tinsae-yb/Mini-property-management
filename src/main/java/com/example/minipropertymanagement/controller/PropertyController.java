@@ -1,13 +1,13 @@
 package com.example.minipropertymanagement.controller;
 
 
-import com.example.minipropertymanagement.domain.enums.PropertyType;
 import com.example.minipropertymanagement.dto.request.CreateOfferRequest;
 import com.example.minipropertymanagement.dto.request.PostPropertyRequest;
 import com.example.minipropertymanagement.dto.response.OfferResponse;
 import com.example.minipropertymanagement.dto.response.OffersResponse;
 import com.example.minipropertymanagement.dto.response.PostPropertyResponse;
 import com.example.minipropertymanagement.dto.response.PropertiesPaginatedResponse;
+import com.example.minipropertymanagement.enums.PropertyType;
 import com.example.minipropertymanagement.service.PropertyService;
 import com.example.minipropertymanagement.util.S3Util;
 import jakarta.validation.Valid;
@@ -45,8 +45,9 @@ public class PropertyController {
             @RequestParam(required = false) String zipCode,
             @RequestParam(required = false) String city,
             @RequestParam(required = false) String state,
+            @RequestParam(required = false) PropertyType propertyType,
             Pageable pageable) {
-        return propertyService.getProperties(minPrice, maxPrice, bedRooms, bathRooms, zipCode, city, state, pageable);
+        return propertyService.getProperties(minPrice, maxPrice, bedRooms, bathRooms, zipCode, city, state,propertyType, pageable);
     }
 
 

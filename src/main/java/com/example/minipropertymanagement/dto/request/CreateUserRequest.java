@@ -1,7 +1,7 @@
 package com.example.minipropertymanagement.dto.request;
 
 
-import com.example.minipropertymanagement.domain.enums.Role;
+import com.example.minipropertymanagement.enums.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
