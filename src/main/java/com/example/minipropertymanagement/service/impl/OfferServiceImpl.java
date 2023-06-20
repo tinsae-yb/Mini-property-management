@@ -7,6 +7,7 @@ import com.example.minipropertymanagement.dto.response.OffersResponse;
 import com.example.minipropertymanagement.enums.OfferActions;
 import com.example.minipropertymanagement.enums.OfferStatus;
 import com.example.minipropertymanagement.enums.PropertyStatus;
+import com.example.minipropertymanagement.enums.Role;
 import com.example.minipropertymanagement.exception.ForbiddenAccess;
 import com.example.minipropertymanagement.exception.InvalidCredential;
 import com.example.minipropertymanagement.exception.NotFoundException;
@@ -41,7 +42,13 @@ public class OfferServiceImpl implements OfferService {
     public OffersResponse getOffers() throws InvalidCredential {
         String username = authUtil.getUsername();
         User user = userRepository.findByEmail(username).orElseThrow(() -> new InvalidCredential("User not found"));
-        List<OfferResponse> offers = offerRepository.findAllByCustomerId(user.getId()).stream().map(offer -> modelMapper.map(offer, OfferResponse.class)).toList();
+        List<OfferResponse> offers;
+        if (user.getRole().equals(Role.USER)) {
+
+            offers = offerRepository.findAllByCustomerId(user.getId()).stream().map(offer -> modelMapper.map(offer, OfferResponse.class)).toList();
+        } else {
+            offers = offerRepository.findAllByPropertyOwnerId(user.getId()).stream().map(offer -> modelMapper.map(offer, OfferResponse.class)).toList();
+        }
         OffersResponse offersResponse = new OffersResponse();
         offersResponse.setOffers(offers);
         return offersResponse;
