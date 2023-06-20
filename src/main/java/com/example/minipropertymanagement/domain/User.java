@@ -11,7 +11,7 @@ import java.util.List;
 
 @Entity
 @Data
-@Table(name = "users", uniqueConstraints = {@UniqueConstraint(columnNames = {"email"}, name = "unique_email" )})
+@Table(name = "users", uniqueConstraints = {@UniqueConstraint(columnNames = {"email"}, name = "unique_email")})
 public class User {
 
     @Id
@@ -23,14 +23,17 @@ public class User {
     private Role role;
 
 
-
     private String email;
     private String password;
     private AccountStatus accountStatus;
 
-    @OneToMany(mappedBy = "owner",fetch = FetchType.LAZY)
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<Favorite> favorites;
+
+    @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY)
     private List<Property> properties;
 
-    @OneToMany(mappedBy = "customer",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
     private List<Offer> offers;
 }

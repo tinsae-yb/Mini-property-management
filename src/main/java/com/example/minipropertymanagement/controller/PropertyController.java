@@ -49,6 +49,10 @@ public class PropertyController {
     }
 
 
+
+
+
+
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{propertyId}")
     public PropertyResponse getProperty(@PathVariable Long propertyId) {
@@ -68,6 +72,25 @@ public class PropertyController {
         return propertyService.getPropertyOffers(propertyId);
     }
 
+
+
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    @PutMapping ("/{propertyId}/favorites")
+    public void addFavorite(@PathVariable Long propertyId) {
+        propertyService.addFavorite(propertyId);
+    }
+
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    @DeleteMapping ("/{propertyId}/favorites")
+    public void removeFavorite(@PathVariable Long propertyId) {
+        propertyService.removeFavorite(propertyId);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping ("/{propertyId}/favorites")
+    public void isFavorite(@PathVariable Long propertyId) {
+         propertyService.isFavorite(propertyId);
+    }
 
 
 

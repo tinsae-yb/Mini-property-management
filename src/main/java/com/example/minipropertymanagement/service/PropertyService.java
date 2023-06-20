@@ -23,4 +23,10 @@ public interface PropertyService {
     OffersResponse getPropertyOffers(Long propertyId);
 
     PropertyResponse getProperty(Long propertyId);
+
+    void addFavorite(Long propertyId);
+
+    void removeFavorite(Long propertyId);
+
+    void isFavorite(Long propertyId);
 }

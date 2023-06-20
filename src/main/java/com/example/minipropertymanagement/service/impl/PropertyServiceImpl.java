@@ -1,6 +1,7 @@
 package com.example.minipropertymanagement.service.impl;
 
 import com.amazonaws.services.kms.model.NotFoundException;
+import com.example.minipropertymanagement.domain.Favorite;
 import com.example.minipropertymanagement.domain.Offer;
 import com.example.minipropertymanagement.domain.Property;
 import com.example.minipropertymanagement.domain.User;
@@ -15,10 +16,7 @@ import com.example.minipropertymanagement.enums.PropertyStatus;
 import com.example.minipropertymanagement.enums.PropertyType;
 import com.example.minipropertymanagement.enums.Role;
 import com.example.minipropertymanagement.filter.ModelMappingUtil;
-import com.example.minipropertymanagement.repo.OfferRepository;
-import com.example.minipropertymanagement.repo.PropertyCriteriaRepository;
-import com.example.minipropertymanagement.repo.PropertyRepository;
-import com.example.minipropertymanagement.repo.UserRepository;
+import com.example.minipropertymanagement.repo.*;
 import com.example.minipropertymanagement.service.PropertyService;
 import com.example.minipropertymanagement.util.AuthUtil;
 import com.example.minipropertymanagement.util.S3Util;
@@ -53,6 +51,8 @@ public class PropertyServiceImpl implements PropertyService {
     private final ModelMappingUtil modelMappingUtil;
 
     private final OfferRepository offerRepository;
+
+    private final FavoriteRepository favoriteRepository;
 
     @Override
     public PropertyResponse postProperty(PostPropertyRequest postPropertyRequest) throws IOException {
@@ -114,7 +114,6 @@ public class PropertyServiceImpl implements PropertyService {
         String username = authUtil.getUsername();
         User user = userRepository.findByEmail(username).orElseThrow(() -> new NotFoundException("User not found"));
 
-
         List<Offer> offers = null;
         if (user.getRole().equals(Role.USER)) {
             offers = offerRepository.findByPropertyIdAndCustomerId(propertyId, user.getId());
@@ -139,5 +138,36 @@ public class PropertyServiceImpl implements PropertyService {
         PropertyResponse propertyResponse = modelMapper.map(property, PropertyResponse.class);
 
         return propertyResponse;
+    }
+
+    @Override
+    public void addFavorite(Long propertyId) {
+        String username = authUtil.getUsername();
+        User user = userRepository.findByEmail(username).orElseThrow(() -> new NotFoundException("User not found"));
+        Favorite favorite = new Favorite();
+        favorite.setProperty(propertyRepository.findById(propertyId).orElseThrow(() -> new NotFoundException("Property not found")));
+        favorite.setUser(user);
+        favoriteRepository.save(favorite);
+
+
+    }
+
+    @Override
+    public void removeFavorite(Long propertyId) {
+        String username = authUtil.getUsername();
+        User user = userRepository.findByEmail(username).orElseThrow(() -> new NotFoundException("User not found"));
+        Favorite favorite = favoriteRepository.findByPropertyIdAndUserId(propertyId, user.getId()).orElseThrow(() -> new NotFoundException("Favorite not found"));
+        favoriteRepository.delete(favorite);
+
+    }
+
+    @Override
+    public void isFavorite(Long propertyId) {
+
+        String username = authUtil.getUsername();
+        User user = userRepository.findByEmail(username).orElseThrow(() -> new NotFoundException("User not found"));
+        Favorite favorite = favoriteRepository.findByPropertyIdAndUserId(propertyId, user.getId()).orElseThrow(() -> new NotFoundException("Favorite not found"));
+
+
     }
 }
