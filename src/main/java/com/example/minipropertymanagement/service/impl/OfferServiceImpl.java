@@ -49,6 +49,8 @@ public class OfferServiceImpl implements OfferService {
         } else {
             offers = offerRepository.findAllByPropertyOwnerId(user.getId()).stream().map(offer -> modelMapper.map(offer, OfferResponse.class)).toList();
         }
+
+
         OffersResponse offersResponse = new OffersResponse();
         offersResponse.setOffers(offers);
         return offersResponse;

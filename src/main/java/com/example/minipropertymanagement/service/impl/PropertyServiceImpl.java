@@ -80,15 +80,18 @@ public class PropertyServiceImpl implements PropertyService {
     public PropertiesPaginatedResponse getProperties(BigDecimal minPrice, BigDecimal maxPrice, Integer bedRooms, Integer bathRooms, String zipCode, String city, String state, PropertyType propertyType, Pageable pageable) {
 //
 
-        User user = null;
+        User owner = null;
         try {
             String username = authUtil.getUsername();
-            user = userRepository.findByEmail(username).orElseThrow(() -> new NotFoundException("User not found"));
+            User user = userRepository.findByEmail(username).orElseThrow(() -> new NotFoundException("User not found"));
+            if (user.getRole().equals(Role.OWNER)) {
+                owner = user;
+            }
         } catch (Exception e) {
         }
 
 
-        Page<Property> properties = propertyCriteriaRepository.searchProperties(minPrice, maxPrice, bedRooms, bathRooms, zipCode, city, state, propertyType, pageable, user == null ? null : user.getId());
+        Page<Property> properties = propertyCriteriaRepository.searchProperties(minPrice, maxPrice, bedRooms, bathRooms, zipCode, city, state, propertyType, pageable, owner == null ? null : owner.getId());
         PagedModel.PageMetadata pageMetadata = new PagedModel.PageMetadata(properties.getSize(), properties.getNumber() + 1, properties.getTotalElements(), properties.getTotalPages());
         return modelMappingUtil.convertToPropertiesPaginatedResponse(pageMetadata, properties.getContent());
 
@@ -99,10 +102,10 @@ public class PropertyServiceImpl implements PropertyService {
         String username = authUtil.getUsername();
         User user = userRepository.findByEmail(username).orElseThrow(() -> new NotFoundException("User not found"));
         Property property = propertyRepository.findById(propertyId).orElseThrow(() -> new NotFoundException("Property not found"));
-        if(property.getPropertyStatus().equals(PropertyStatus.SOLD)){
+        if (property.getPropertyStatus().equals(PropertyStatus.SOLD)) {
             throw new ForbiddenAccess("Property is sold");
         }
-        if(property.getPropertyStatus().equals(PropertyStatus.CONTINGENT)){
+        if (property.getPropertyStatus().equals(PropertyStatus.CONTINGENT)) {
             throw new ForbiddenAccess("Property is contingent");
         }
 
@@ -177,7 +180,7 @@ public class PropertyServiceImpl implements PropertyService {
 
         String username = authUtil.getUsername();
         User user = userRepository.findByEmail(username).orElseThrow(() -> new NotFoundException("User not found"));
-        Favorite favorite = favoriteRepository.findByPropertyIdAndUserId(propertyId, user.getId()).orElseThrow(() -> new NotFoundException("Favorite not found"));
+        favoriteRepository.findByPropertyIdAndUserId(propertyId, user.getId()).orElseThrow(() -> new NotFoundException("Favorite not found"));
 
 
     }

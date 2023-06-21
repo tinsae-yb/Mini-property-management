@@ -5,8 +5,11 @@ import com.example.minipropertymanagement.enums.PropertyStatus;
 import com.example.minipropertymanagement.enums.PropertyType;
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.List;
 
 @Entity
@@ -39,6 +42,13 @@ public class Property {
 
 
     private PropertyStatus propertyStatus;
+
+
+    @CreationTimestamp
+    private Instant createdDate;
+
+    @UpdateTimestamp
+    private Instant lastModifiedDate;
 
 
 }

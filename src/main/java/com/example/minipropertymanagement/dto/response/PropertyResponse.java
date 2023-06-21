@@ -43,5 +43,9 @@ public class PropertyResponse {
 
     private List<TagDTO> tags;
 
+    private Object createdDate;
+
+    private Object lastModifiedDate;
+
 
 }
