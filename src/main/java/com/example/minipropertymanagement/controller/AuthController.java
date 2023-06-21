@@ -24,7 +24,7 @@ public class AuthController {
     @PostMapping("/login")
 
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public LoginResponse login(@RequestBody @Valid LoginRequest loginRequest) throws Exception {
+    public LoginResponse login(@RequestBody @Valid LoginRequest loginRequest) throws InvalidCredential {
         return authService.login(loginRequest);
     }
 

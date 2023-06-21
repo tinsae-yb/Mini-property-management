@@ -10,7 +10,7 @@ import com.example.minipropertymanagement.exception.InvalidCredential;
 
 public interface AuthService {
 
-LoginResponse login(LoginRequest loginRequest) throws Exception;
+LoginResponse login(LoginRequest loginRequest) throws InvalidCredential;
 
      LoginResponse register(CreateUserRequest createUserRequest);
 

@@ -38,11 +38,9 @@ public class AuthServiceImpl implements AuthService {
     private final BCryptPasswordEncoder passwordEncoder;
 
     @Override
-    public LoginResponse login(LoginRequest loginRequest) throws Exception {
+    public LoginResponse login(LoginRequest loginRequest) throws InvalidCredential {
         Authentication auth = authenticationProvider.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
         User user = userRepository.findByEmail(auth.getName()).orElseThrow(() -> new InvalidCredential("User not found with this email"));
-
-
         LoginResponse loginResponse = new LoginResponse();
         loginResponse.setAccessToken(jwtUtil.generateToken(user, false));
         loginResponse.setRefreshToken(jwtUtil.generateToken(user, true));
@@ -68,10 +66,11 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public RefreshTokenResponse refreshToken(RefreshTokenRequest refreshTokenRequest) throws InvalidCredential {
-        boolean valid = jwtUtil.validateToken(refreshTokenRequest.getRefreshToken());
-        if (!valid) {
-            throw new InvalidCredential("Invalid refresh token");
-        }
+//        boolean valid =
+                jwtUtil.validateToken(refreshTokenRequest.getRefreshToken());
+//        if (!valid) {
+//            throw new InvalidCredential("Invalid refresh token");
+//        }
         Claims claims = jwtUtil.getClaims(refreshTokenRequest.getRefreshToken());
         String email = claims.getSubject();
         User user = userRepository.findByEmail(email).orElseThrow(() -> new InvalidCredential("User not found with this email"));

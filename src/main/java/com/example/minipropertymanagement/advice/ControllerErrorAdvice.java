@@ -41,7 +41,6 @@ public class ControllerErrorAdvice {
 
         Map<String, String> errors = new HashMap<>();
 
-
         errors.put("message", ex.getMessage());
 
 
@@ -79,9 +78,11 @@ public class ControllerErrorAdvice {
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(InvalidCredential.class)
-    public Map<String, String> invalidCredentialExceptionHandler(NotFoundException ex) {
+    public Map<String, String> invalidCredentialExceptionHandler(InvalidCredential ex) {
         Map<String, String> errors = new HashMap<>();
         errors.put("error", ex.getMessage());
+
+
         return errors;
     }
 

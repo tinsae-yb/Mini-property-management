@@ -1,6 +1,7 @@
 package com.example.minipropertymanagement.util;
 
 import com.example.minipropertymanagement.domain.User;
+import com.example.minipropertymanagement.exception.InvalidCredential;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,33 +19,29 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class JwtUtil {
 
-    @Value("${jwtSecret}")
-    private  String secret ;
-
-    @Value("${accessTokenExpirationTime}")
-    private  Integer accessTokenExpiration;
-
-    @Value("${refreshTokenExpirationTime}")
-    private  Integer refreshExpiration;
     private final UserDetailsService userDetailsService;
-
+    @Value("${jwtSecret}")
+    private String secret;
+    @Value("${accessTokenExpirationTime}")
+    private Integer accessTokenExpiration;
+    @Value("${refreshTokenExpirationTime}")
+    private Integer refreshExpiration;
 
     public Claims getClaims(String token) {
         return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
     }
 
 
-
-
-    public boolean validateToken(String token) {
+    public void validateToken(String token) {
         try {
             Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
-            return true;
+//            return true;
         } catch (SignatureException | MalformedJwtException | ExpiredJwtException | UnsupportedJwtException |
                  IllegalArgumentException e) {
             System.out.println(e.getMessage());
+            throw new InvalidCredential("Invalid Token. " + e.getMessage());
         }
-        return false;
+//        return false;
     }
 
     public Authentication getAuthentication(String token) {
