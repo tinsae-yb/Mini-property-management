@@ -72,7 +72,7 @@ public class OfferServiceImpl implements OfferService {
         if (!isOwner) {
             throw new ForbiddenAccess("Only owner can accept offer");
         }
-        if (propertyStatus.equals(PropertyStatus.SOLD)|| propertyStatus.equals(PropertyStatus.CONTINGENT)) {
+        if (propertyStatus.equals(PropertyStatus.SOLD) || propertyStatus.equals(PropertyStatus.CONTINGENT)) {
             throw new ForbiddenAccess("You can't accept offer at this stage");
         }
         if (offerStatus.equals(OfferStatus.CANCELLED)) {
@@ -135,7 +135,7 @@ public class OfferServiceImpl implements OfferService {
         }
         offer.setOfferStatus(OfferStatus.CANCELLED);
         OfferResponse offerResponse = modelMapper.map(offer, OfferResponse.class);
-        if (propertyStatus.equals(PropertyStatus.PENDING)  ) {
+        if (propertyStatus.equals(PropertyStatus.PENDING)) {
             List<Offer> offers = offerRepository.findAllByPropertyIdAndOfferStatus(offer.getProperty().getId(), OfferStatus.PENDING);
             if (offers.isEmpty()) {
                 offer.getProperty().setPropertyStatus(PropertyStatus.AVAILABLE);
@@ -151,7 +151,7 @@ public class OfferServiceImpl implements OfferService {
         String username = authUtil.getUsername();
         User user = userRepository.findByEmail(username).orElseThrow(() -> new ForbiddenAccess("User not found"));
         Offer offer = offerRepository.findById(offerId).orElseThrow(() -> new NotFoundException("Offer not found"));
-        OfferStatus offerStatus = offer.getOfferStatus();
+
         PropertyStatus propertyStatus = offer.getProperty().getPropertyStatus();
         boolean isOwner = offer.getProperty().getOwner().getId() == user.getId();
 
@@ -165,7 +165,9 @@ public class OfferServiceImpl implements OfferService {
         } else {
             offer.setAcceptedByCustomer(true);
         }
-        offer.getProperty().setPropertyStatus(PropertyStatus.SOLD);
+        if (offer.isAcceptedByCustomer() && offer.isAcceptedByOwner()) {
+            offer.getProperty().setPropertyStatus(PropertyStatus.SOLD);
+        }
 
 
         OfferResponse offerResponse = modelMapper.map(offer, OfferResponse.class);
