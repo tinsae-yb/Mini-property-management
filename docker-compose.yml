@@ -24,6 +24,8 @@ services:
     stdin_open: true
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/mydb
+      - CLOUD_AWS_CREDENTIALS_ACCESS_KEY=AKIA4VFM3RR77BXUAMRS
+      - CLOUD_AWS_CREDENTIALS_SECRET_KEY=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
 
   db:
     image: postgres:latest
@@ -32,8 +34,8 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=mydb
-#    ports:
-#      - '5432:5432'
+    #    ports:
+    #      - '5432:5432'
     volumes:
       - db:/var/lib/postgresql/data
 volumes:
