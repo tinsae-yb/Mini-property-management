@@ -20,7 +20,7 @@ import java.time.Instant;
 public class Offer {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     private BigDecimal offerPrice;

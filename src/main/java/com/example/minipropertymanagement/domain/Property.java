@@ -16,7 +16,7 @@ import java.util.List;
 @Data
 public class Property {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     private String image;

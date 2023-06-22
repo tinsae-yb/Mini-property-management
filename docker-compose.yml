@@ -1,7 +1,7 @@
 version: '3'
 services:
   front-end:
-    image: tinsae/waa-final-project-front-end:1.0.0
+    image: tinsae/waa-final-project-front-end:1.0.1
     ports:
       - "3000:3000"
     depends_on:
