@@ -1,6 +1,6 @@
 package com.example.minipropertymanagement.enums;
 
 public enum OfferActions {
-   REJECT, ACCEPT, CANCEL, ACCEPT_CONTINGENT
+   REJECT, ACCEPT, CANCEL, CANCEL_CONTINGENT, ACCEPT_CONTINGENT
 
 }

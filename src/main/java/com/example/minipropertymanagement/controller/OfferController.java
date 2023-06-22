@@ -30,24 +30,25 @@ public class OfferController {
     @PutMapping(value = "/{offerId}", params = {"action"})
     public OfferResponse updateOffer(@PathVariable Long offerId, @RequestParam OfferActions action) throws ForbiddenAccess, NotFoundException {
 
-        if(action.equals(OfferActions.ACCEPT_CONTINGENT)){
+        if (action.equals(OfferActions.ACCEPT_CONTINGENT)) {
             return offerService.acceptContingent(offerId);
         }
-        if(action.equals(OfferActions.CANCEL)){
+        if (action.equals(OfferActions.CANCEL_CONTINGENT)) {
+            return offerService.cancelContingent(offerId);
+        }
+        if (action.equals(OfferActions.CANCEL)) {
             return offerService.cancelOffer(offerId);
         }
-        if(action.equals(OfferActions.REJECT)){
+        if (action.equals(OfferActions.REJECT)) {
             return offerService.rejectOffer(offerId);
         }
-        if(action.equals(OfferActions.ACCEPT)){
+        if (action.equals(OfferActions.ACCEPT)) {
             return offerService.acceptOffer(offerId);
         }
         return null;
 
 
-
     }
-
 
 
 }

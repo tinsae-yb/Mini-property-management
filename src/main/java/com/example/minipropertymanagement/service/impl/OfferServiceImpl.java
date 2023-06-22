@@ -174,4 +174,31 @@ public class OfferServiceImpl implements OfferService {
         return offerResponse;
 
     }
+
+    @Override
+    public OfferResponse cancelContingent(Long offerId) throws NotFoundException {
+
+        String username = authUtil.getUsername();
+        User user = userRepository.findByEmail(username).orElseThrow(() -> new ForbiddenAccess("User not found"));
+        Offer offer = offerRepository.findById(offerId).orElseThrow(() -> new NotFoundException("Offer not found"));
+
+        PropertyStatus propertyStatus = offer.getProperty().getPropertyStatus();
+        boolean isOwner = offer.getProperty().getOwner().getId() == user.getId();
+
+
+
+        if (!isOwner) {
+            throw new ForbiddenAccess("Only owner can cancel contingent");
+        }
+        if (!propertyStatus.equals(PropertyStatus.CONTINGENT)) {
+            throw new ForbiddenAccess("Property is not contingent");
+        }
+
+        offer.getProperty().setPropertyStatus(PropertyStatus.AVAILABLE);
+        offer.setOfferStatus(OfferStatus.REJECTED);
+        offer.setAcceptedByOwner(false);
+
+        OfferResponse offerResponse = modelMapper.map(offer, OfferResponse.class);
+        return offerResponse;
+    }
 }

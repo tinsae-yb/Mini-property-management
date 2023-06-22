@@ -17,4 +17,6 @@ public interface OfferService {
     OfferResponse cancelOffer(Long offerId) throws ForbiddenAccess, NotFoundException;
 
     OfferResponse acceptContingent(Long offerId) throws ForbiddenAccess, NotFoundException;
+
+    OfferResponse cancelContingent(Long offerId) throws NotFoundException;
 }

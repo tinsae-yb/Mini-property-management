@@ -37,7 +37,7 @@ public class Property {
     private int numberOfFloors;
     private int yearBuilt;
 
-    @Lob
+    @Column(columnDefinition = "TEXT")
     private String description;
     private PropertyType propertyType;
 
