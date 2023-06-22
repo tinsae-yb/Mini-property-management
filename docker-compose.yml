@@ -1,6 +1,18 @@
 version: '3'
 services:
-  app:
+  front-end:
+    image: tinsae/waa-final-project-front-end:1.0.0
+    ports:
+      - "3000:3000"
+    depends_on:
+      - back-end
+    tty: true
+    stdin_open: true
+    environment:
+      - VITE_BASE_URL=http://localhost:8080
+
+
+  back-end:
     build:
       context: .
       dockerfile: Dockerfile
