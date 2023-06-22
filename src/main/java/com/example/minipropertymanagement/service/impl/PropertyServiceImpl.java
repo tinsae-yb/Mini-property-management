@@ -10,10 +10,7 @@ import com.example.minipropertymanagement.dto.response.OfferResponse;
 import com.example.minipropertymanagement.dto.response.OffersResponse;
 import com.example.minipropertymanagement.dto.response.PropertyResponse;
 import com.example.minipropertymanagement.dto.response.PropertiesPaginatedResponse;
-import com.example.minipropertymanagement.enums.OfferStatus;
-import com.example.minipropertymanagement.enums.PropertyStatus;
-import com.example.minipropertymanagement.enums.PropertyType;
-import com.example.minipropertymanagement.enums.Role;
+import com.example.minipropertymanagement.enums.*;
 import com.example.minipropertymanagement.exception.ForbiddenAccess;
 import com.example.minipropertymanagement.exception.NotFoundException;
 import com.example.minipropertymanagement.filter.ModelMappingUtil;
@@ -60,6 +57,14 @@ public class PropertyServiceImpl implements PropertyService {
 
         String username = authUtil.getUsername();
         User user = userRepository.findByEmail(username).orElseThrow(() -> new NotFoundException("User not found"));
+        if(user.getAccountStatus().equals(AccountStatus.BLOCKED)){
+            throw new ForbiddenAccess("Your account is blocked");
+        }
+        if(user.getAccountStatus().equals(AccountStatus.PENDING)){
+            throw new ForbiddenAccess("Your account is pending");
+        }
+
+
         Property property = modelMapper.map(postPropertyRequest, Property.class);
         property.setOwner(user);
         property.setPropertyStatus(PropertyStatus.AVAILABLE);
