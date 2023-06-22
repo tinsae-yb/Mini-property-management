@@ -33,6 +33,8 @@ public class PropertySmallResponse {
 
     private int numberOfFloors;
 
+    private int yearBuilt;
+
 
     private Object createdDate;
 

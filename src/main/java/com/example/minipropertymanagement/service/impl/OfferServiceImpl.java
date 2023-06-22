@@ -11,6 +11,7 @@ import com.example.minipropertymanagement.enums.Role;
 import com.example.minipropertymanagement.exception.ForbiddenAccess;
 import com.example.minipropertymanagement.exception.ForbiddenAccess;
 import com.example.minipropertymanagement.exception.NotFoundException;
+import com.example.minipropertymanagement.repo.OfferCustomerRepository;
 import com.example.minipropertymanagement.repo.OfferRepository;
 import com.example.minipropertymanagement.repo.UserRepository;
 import com.example.minipropertymanagement.service.OfferService;
@@ -31,6 +32,7 @@ public class OfferServiceImpl implements OfferService {
 
     private final OfferRepository offerRepository;
     private final UserRepository userRepository;
+    private final OfferCustomerRepository offerCustomerRepository;
 
     private final ModelMapper modelMapper;
 
@@ -45,7 +47,7 @@ public class OfferServiceImpl implements OfferService {
         List<OfferResponse> offers;
         if (user.getRole().equals(Role.USER)) {
 
-            offers = offerRepository.findAllByCustomerId(user.getId()).stream().map(offer -> modelMapper.map(offer, OfferResponse.class)).toList();
+            offers = offerRepository.findAllByCustomerIdOrderByCreatedDateDesc(user.getId()).stream().map(offer -> modelMapper.map(offer, OfferResponse.class)).toList();
         } else {
             offers = offerRepository.findAllByPropertyOwnerId(user.getId()).stream().map(offer -> modelMapper.map(offer, OfferResponse.class)).toList();
         }
@@ -70,17 +72,16 @@ public class OfferServiceImpl implements OfferService {
         if (!isOwner) {
             throw new ForbiddenAccess("Only owner can accept offer");
         }
-        if (propertyStatus.equals(PropertyStatus.SOLD)) {
-            throw new ForbiddenAccess("Property is already sold");
-        }
-        if (propertyStatus.equals(PropertyStatus.CONTINGENT)) {
-            throw new ForbiddenAccess("Property is already contingent");
+        if (propertyStatus.equals(PropertyStatus.SOLD)|| propertyStatus.equals(PropertyStatus.CONTINGENT)) {
+            throw new ForbiddenAccess("You can't accept offer at this stage");
         }
         if (offerStatus.equals(OfferStatus.CANCELLED)) {
             throw new ForbiddenAccess("Offer is already cancelled");
         }
         offer.setOfferStatus(OfferStatus.ACCEPTED);
         offer.getProperty().setPropertyStatus(PropertyStatus.CONTINGENT);
+
+        offerCustomerRepository.updateOffersForAPropertyOtherThanGivenOffer(offerId, offer.getProperty().getId(), OfferStatus.REJECTED);
 
         OfferResponse offerResponse = modelMapper.map(offer, OfferResponse.class);
         return offerResponse;
@@ -126,31 +127,23 @@ public class OfferServiceImpl implements OfferService {
         OfferStatus offerStatus = offer.getOfferStatus();
         PropertyStatus propertyStatus = offer.getProperty().getPropertyStatus();
         boolean isOwner = offer.getProperty().getOwner().getId() == user.getId();
-
         if (isOwner) {
             throw new ForbiddenAccess("Only customer can cancel offer");
         }
-
-        if (propertyStatus.equals(PropertyStatus.SOLD) || propertyStatus.equals(PropertyStatus.CONTINGENT)) {
-            throw new ForbiddenAccess("Property is already sold or contingent");
+        if (!offerStatus.equals(OfferStatus.PENDING)) {
+            throw new ForbiddenAccess("You cannot modify this offer");
         }
-
-
-        if (offerStatus.equals(OfferStatus.ACCEPTED)) {
-            offer.setOfferStatus(OfferStatus.CANCELLED);
-            List<Offer> offers = offerRepository.findByPropertyId(offer.getProperty().getId());
-            boolean isOtherOfferAccepted = offers.stream().anyMatch(offer1 -> offer1.getOfferStatus().equals(OfferStatus.ACCEPTED));
-            if (!isOtherOfferAccepted) {
+        offer.setOfferStatus(OfferStatus.CANCELLED);
+        OfferResponse offerResponse = modelMapper.map(offer, OfferResponse.class);
+        if (propertyStatus.equals(PropertyStatus.PENDING)  ) {
+            List<Offer> offers = offerRepository.findAllByPropertyIdAndOfferStatus(offer.getProperty().getId(), OfferStatus.PENDING);
+            if (offers.isEmpty()) {
                 offer.getProperty().setPropertyStatus(PropertyStatus.AVAILABLE);
             }
         }
-        if (offerStatus.equals(OfferStatus.REJECTED)) {
-            throw new ForbiddenAccess("Offer is already rejected");
-        }
-
-        OfferResponse offerResponse = modelMapper.map(offer, OfferResponse.class);
         return offerResponse;
     }
+
 
     @Override
     public OfferResponse acceptContingent(Long offerId) throws ForbiddenAccess, NotFoundException {
