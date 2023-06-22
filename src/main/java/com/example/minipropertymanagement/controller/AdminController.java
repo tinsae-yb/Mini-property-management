@@ -1,6 +1,7 @@
 package com.example.minipropertymanagement.controller;
 
 
+import com.example.minipropertymanagement.dto.response.UserResponse;
 import com.example.minipropertymanagement.exception.NotFoundException;
 import com.example.minipropertymanagement.service.AdminService;
 import lombok.RequiredArgsConstructor;
@@ -17,13 +18,13 @@ public class AdminController {
     private final AdminService adminService;
 
     @PutMapping(params = {"ownerId", "approve"})
-    public void approveOwner(@RequestParam Long ownerId) throws NotFoundException {
-        adminService.approveOwner(ownerId);
+    public UserResponse approveOwner(@RequestParam Long ownerId) throws NotFoundException {
+     return    adminService.approveOwner(ownerId);
     }
 
 
     @PutMapping(params = {"ownerId", "block"})
-    public void blockOwner(@RequestParam Long ownerId) throws NotFoundException {
-        adminService.blockOwner(ownerId);
+    public UserResponse blockOwner(@RequestParam Long ownerId) throws NotFoundException {
+    return     adminService.blockOwner(ownerId);
     }
 }

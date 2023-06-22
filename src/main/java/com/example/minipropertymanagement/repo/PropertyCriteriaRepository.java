@@ -36,7 +36,9 @@ public class PropertyCriteriaRepository {
         // Create predicates for the main query
         List<Predicate> predicates = buildPredicates(cb, root, minPrice, maxPrice, bedRooms, bathRooms, zipCode, city, state,propertyType, userId);
 
-        query.where(predicates.toArray(new Predicate[0]));
+        for (Predicate predicate : predicates) {
+            query.where(predicate);
+        }
 
         // Count query for total results
         CriteriaBuilder countBuilder = entityManager.getCriteriaBuilder();
@@ -47,7 +49,10 @@ public class PropertyCriteriaRepository {
         List<Predicate> countPredicates = buildPredicates(countBuilder, countRoot, minPrice, maxPrice, bedRooms, bathRooms, zipCode, city, state,propertyType, userId);
 
         countQuery.select(countBuilder.count(countRoot));
-        countQuery.where(countPredicates.toArray(new Predicate[0]));
+
+        for (Predicate predicate : countPredicates) {
+            countQuery.where(predicate);
+        }
         Long totalResults = entityManager.createQuery(countQuery).getSingleResult();
 
         // Pagination
@@ -77,6 +82,8 @@ public class PropertyCriteriaRepository {
 
         // Bedrooms
         if (bedRooms != null) {
+
+            System.out.println("----------------------" + bedRooms);
             predicates.add(cb.equal(root.get("numberOfBedrooms"), bedRooms));
         }
 
@@ -87,7 +94,7 @@ public class PropertyCriteriaRepository {
 
         // Zip code
         if (zipCode != null && !zipCode.isEmpty()) {
-            predicates.add(cb.equal(root.get("address").get("zipCode"), zipCode));
+            predicates.add(cb.equal(root.get("address").get("zip"), zipCode));
         }
 
         // City
