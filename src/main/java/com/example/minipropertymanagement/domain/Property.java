@@ -24,7 +24,7 @@ public class Property {
 
     private Address address;
 
-    @OneToMany(mappedBy = "property", fetch = FetchType.LAZY    )
+    @OneToMany(mappedBy = "property", fetch = FetchType.LAZY , cascade = CascadeType.REMOVE)
     private List<Offer> offers;
 
     @ManyToOne
@@ -36,6 +36,8 @@ public class Property {
     private int numberOfBathrooms;
     private int numberOfFloors;
     private int yearBuilt;
+
+    @Lob
     private String description;
     private PropertyType propertyType;
 

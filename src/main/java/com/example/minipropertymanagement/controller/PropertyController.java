@@ -33,6 +33,13 @@ public class PropertyController {
         return propertyService.postProperty(postPropertyRequest);
     }
 
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    @DeleteMapping("/{propertyId}")
+
+    public void deleteProperty(@PathVariable Long propertyId) throws NotFoundException, com.example.minipropertymanagement.exception.NotFoundException {
+        propertyService.deleteProperty(propertyId);
+    }
+
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("")

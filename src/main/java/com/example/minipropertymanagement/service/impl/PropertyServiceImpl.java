@@ -76,6 +76,8 @@ public class PropertyServiceImpl implements PropertyService {
         property.setImage(image);
         propertyRepository.save(property);
 
+
+
         PropertyResponse postPropertyResponse = modelMapper.map(property, PropertyResponse.class);
         return postPropertyResponse;
 
@@ -186,6 +188,28 @@ public class PropertyServiceImpl implements PropertyService {
         String username = authUtil.getUsername();
         User user = userRepository.findByEmail(username).orElseThrow(() -> new NotFoundException("User not found"));
         favoriteRepository.findByPropertyIdAndUserId(propertyId, user.getId()).orElseThrow(() -> new NotFoundException("Favorite not found"));
+
+
+    }
+
+    @Override
+    public void deleteProperty(Long propertyId) throws NotFoundException {
+
+        String username = authUtil.getUsername();
+        User user = userRepository.findByEmail(username).orElseThrow(() -> new NotFoundException("User not found"));
+
+        Property property = propertyRepository.findById(propertyId).orElseThrow(() -> new NotFoundException("Property not found"));
+
+        if(property.getOwner().getId()!=(user.getId())){
+            throw new ForbiddenAccess("You are not the owner of this property");
+        }
+
+        if(!property.getPropertyStatus().equals(PropertyStatus.AVAILABLE)){
+
+            throw new ForbiddenAccess("You can't delete this property");
+        }
+
+        propertyRepository.delete(property);
 
 
     }

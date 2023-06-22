@@ -59,6 +59,7 @@ public class Config {
             authorize.requestMatchers(HttpMethod.GET, "/api/v1/properties/*/offers").hasAnyAuthority(Role.USER.getRole(), Role.OWNER.getRole());
             authorize.requestMatchers(HttpMethod.GET, "/api/v1/properties").permitAll();
             authorize.requestMatchers(HttpMethod.GET, "/api/v1/properties/{propertyId}").permitAll();
+            authorize.requestMatchers(HttpMethod.DELETE, "/api/v1/properties/{propertyId}").hasAuthority(Role.OWNER.getRole());
             authorize.requestMatchers("/api/v1/properties/{propertyId}/favorites").hasAnyAuthority(Role.USER.getRole());
             authorize.requestMatchers("/api/v1/favorites").hasAnyAuthority(Role.USER.getRole());
             authorize.requestMatchers(HttpMethod.GET, "/api/v1/offers").hasAnyAuthority(Role.USER.getRole(), Role.OWNER.getRole());

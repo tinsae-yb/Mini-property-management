@@ -30,4 +30,6 @@ public interface PropertyService {
     void removeFavorite(Long propertyId) throws NotFoundException;
 
     void isFavorite(Long propertyId) throws NotFoundException;
+
+    void deleteProperty(Long propertyId) throws NotFoundException;
 }
