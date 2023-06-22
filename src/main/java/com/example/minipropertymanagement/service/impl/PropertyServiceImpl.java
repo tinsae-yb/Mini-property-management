@@ -1,6 +1,5 @@
 package com.example.minipropertymanagement.service.impl;
 
-import com.amazonaws.services.kms.model.NotFoundException;
 import com.example.minipropertymanagement.domain.Favorite;
 import com.example.minipropertymanagement.domain.Offer;
 import com.example.minipropertymanagement.domain.Property;
@@ -16,6 +15,7 @@ import com.example.minipropertymanagement.enums.PropertyStatus;
 import com.example.minipropertymanagement.enums.PropertyType;
 import com.example.minipropertymanagement.enums.Role;
 import com.example.minipropertymanagement.exception.ForbiddenAccess;
+import com.example.minipropertymanagement.exception.NotFoundException;
 import com.example.minipropertymanagement.filter.ModelMappingUtil;
 import com.example.minipropertymanagement.repo.*;
 import com.example.minipropertymanagement.service.PropertyService;
@@ -56,7 +56,7 @@ public class PropertyServiceImpl implements PropertyService {
     private final FavoriteRepository favoriteRepository;
 
     @Override
-    public PropertyResponse postProperty(PostPropertyRequest postPropertyRequest) throws IOException {
+    public PropertyResponse postProperty(PostPropertyRequest postPropertyRequest) throws IOException, NotFoundException {
 
         String username = authUtil.getUsername();
         User user = userRepository.findByEmail(username).orElseThrow(() -> new NotFoundException("User not found"));
@@ -98,7 +98,7 @@ public class PropertyServiceImpl implements PropertyService {
     }
 
     @Override
-    public OfferResponse postOffer(Long propertyId, CreateOfferRequest createOfferRequest) {
+    public OfferResponse postOffer(Long propertyId, CreateOfferRequest createOfferRequest) throws NotFoundException {
         String username = authUtil.getUsername();
         User user = userRepository.findByEmail(username).orElseThrow(() -> new NotFoundException("User not found"));
         Property property = propertyRepository.findById(propertyId).orElseThrow(() -> new NotFoundException("Property not found"));
@@ -124,7 +124,7 @@ public class PropertyServiceImpl implements PropertyService {
     }
 
     @Override
-    public OffersResponse getPropertyOffers(Long propertyId) {
+    public OffersResponse getPropertyOffers(Long propertyId) throws NotFoundException {
         String username = authUtil.getUsername();
         User user = userRepository.findByEmail(username).orElseThrow(() -> new NotFoundException("User not found"));
 
@@ -145,7 +145,7 @@ public class PropertyServiceImpl implements PropertyService {
     }
 
     @Override
-    public PropertyResponse getProperty(Long propertyId) {
+    public PropertyResponse getProperty(Long propertyId) throws NotFoundException {
 
         Property property = propertyRepository.findById(propertyId).orElseThrow(() -> new NotFoundException("Property not found"));
 
@@ -155,7 +155,7 @@ public class PropertyServiceImpl implements PropertyService {
     }
 
     @Override
-    public void addFavorite(Long propertyId) {
+    public void addFavorite(Long propertyId) throws NotFoundException {
         String username = authUtil.getUsername();
         User user = userRepository.findByEmail(username).orElseThrow(() -> new NotFoundException("User not found"));
         Favorite favorite = new Favorite();
@@ -167,7 +167,7 @@ public class PropertyServiceImpl implements PropertyService {
     }
 
     @Override
-    public void removeFavorite(Long propertyId) {
+    public void removeFavorite(Long propertyId) throws NotFoundException {
         String username = authUtil.getUsername();
         User user = userRepository.findByEmail(username).orElseThrow(() -> new NotFoundException("User not found"));
         Favorite favorite = favoriteRepository.findByPropertyIdAndUserId(propertyId, user.getId()).orElseThrow(() -> new NotFoundException("Favorite not found"));
@@ -176,7 +176,7 @@ public class PropertyServiceImpl implements PropertyService {
     }
 
     @Override
-    public void isFavorite(Long propertyId) {
+    public void isFavorite(Long propertyId) throws NotFoundException {
 
         String username = authUtil.getUsername();
         User user = userRepository.findByEmail(username).orElseThrow(() -> new NotFoundException("User not found"));

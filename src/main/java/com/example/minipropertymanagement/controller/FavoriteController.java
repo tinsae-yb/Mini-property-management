@@ -2,7 +2,7 @@ package com.example.minipropertymanagement.controller;
 
 
 import com.example.minipropertymanagement.dto.response.FavoritesResponse;
-import com.example.minipropertymanagement.exception.InvalidCredential;
+import com.example.minipropertymanagement.exception.ForbiddenAccess;
 import com.example.minipropertymanagement.service.FavoriteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,7 +26,7 @@ public class FavoriteController {
         @ResponseStatus(HttpStatus.ACCEPTED)
         @DeleteMapping("/{favoriteId}")
 
-        public void deleteFavorite( @PathVariable Long favoriteId) throws InvalidCredential {
+        public void deleteFavorite( @PathVariable Long favoriteId) throws ForbiddenAccess {
             favoriteService.deleteFavorite(favoriteId);
         }
 

@@ -51,7 +51,7 @@ public class PropertyCriteriaRepository {
         Long totalResults = entityManager.createQuery(countQuery).getSingleResult();
 
         // Pagination
-        query.orderBy(cb.asc(root.get("id"))); // Order by property ID (adjust as needed)
+        query.orderBy(cb.desc(root.get("createdDate"))); // Order by property ID (adjust as needed)
 
         TypedQuery<Property> typedQuery = entityManager.createQuery(query);
         typedQuery.setFirstResult((int) pageable.getOffset());

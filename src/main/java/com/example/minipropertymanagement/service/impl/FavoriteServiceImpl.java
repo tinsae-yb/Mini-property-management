@@ -6,7 +6,7 @@ import com.example.minipropertymanagement.domain.Favorite;
 import com.example.minipropertymanagement.domain.User;
 import com.example.minipropertymanagement.dto.response.FavoriteResponse;
 import com.example.minipropertymanagement.dto.response.FavoritesResponse;
-import com.example.minipropertymanagement.exception.InvalidCredential;
+import com.example.minipropertymanagement.exception.ForbiddenAccess;
 import com.example.minipropertymanagement.repo.FavoriteRepository;
 import com.example.minipropertymanagement.repo.UserRepository;
 import com.example.minipropertymanagement.service.FavoriteService;
@@ -43,7 +43,7 @@ public class FavoriteServiceImpl implements FavoriteService {
     }
 
     @Override
-    public void deleteFavorite(Long favoriteId) throws InvalidCredential {
+    public void deleteFavorite(Long favoriteId) throws ForbiddenAccess {
         String username = authUtil.getUsername();
         User user = userRepository.findByEmail(username).orElseThrow(() -> new NotFoundException("User not found"));
         Favorite favorite = favoriteRepository.findById(favoriteId).orElseThrow(() -> new NotFoundException("Favorite not found"));
@@ -51,7 +51,7 @@ public class FavoriteServiceImpl implements FavoriteService {
             favoriteRepository.delete(favorite);
         } else {
 
-            throw new InvalidCredential("You are not authorized to delete this favorite");
+            throw new ForbiddenAccess("You are not authorized to delete this favorite");
         }
 
 

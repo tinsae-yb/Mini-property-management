@@ -6,7 +6,8 @@ import com.example.minipropertymanagement.dto.request.LoginRequest;
 import com.example.minipropertymanagement.dto.request.RefreshTokenRequest;
 import com.example.minipropertymanagement.dto.response.LoginResponse;
 import com.example.minipropertymanagement.dto.response.RefreshTokenResponse;
-import com.example.minipropertymanagement.exception.InvalidCredential;
+import com.example.minipropertymanagement.exception.ForbiddenAccess;
+import com.example.minipropertymanagement.exception.InvalidToken;
 import com.example.minipropertymanagement.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,7 @@ public class AuthController {
     @PostMapping("/login")
 
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public LoginResponse login(@RequestBody @Valid LoginRequest loginRequest) throws InvalidCredential {
+    public LoginResponse login(@RequestBody @Valid LoginRequest loginRequest) throws ForbiddenAccess {
         return authService.login(loginRequest);
     }
 
@@ -37,7 +38,7 @@ public class AuthController {
     }
     @PostMapping("/refreshToken")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public RefreshTokenResponse refreshToken(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest) throws InvalidCredential {
+    public RefreshTokenResponse refreshToken(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest) throws InvalidToken {
         return authService.refreshToken(refreshTokenRequest);
     }
 

@@ -1,7 +1,8 @@
 package com.example.minipropertymanagement.util;
 
 import com.example.minipropertymanagement.domain.User;
-import com.example.minipropertymanagement.exception.InvalidCredential;
+import com.example.minipropertymanagement.exception.ForbiddenAccess;
+import com.example.minipropertymanagement.exception.InvalidToken;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,13 +36,12 @@ public class JwtUtil {
     public void validateToken(String token) {
         try {
             Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
-//            return true;
+
         } catch (SignatureException | MalformedJwtException | ExpiredJwtException | UnsupportedJwtException |
                  IllegalArgumentException e) {
             System.out.println(e.getMessage());
-            throw new InvalidCredential("Invalid Token. " + e.getMessage());
+            throw new InvalidToken("Invalid Token. " + e.getMessage());
         }
-//        return false;
     }
 
     public Authentication getAuthentication(String token) {
@@ -54,7 +54,7 @@ public class JwtUtil {
     public String generateToken(User user, boolean isRefreshToken) {
         Map<String, Object> claims = new HashMap<>();
         if (!isRefreshToken) {
-            claims.put("roles", user.getRole());
+            claims.put("role", user.getRole());
         }
         claims.put("accountStatus", user.getAccountStatus());
         return Jwts.builder().setClaims(claims).setSubject(user.getEmail()).setIssuedAt(new Date(System.currentTimeMillis())).setExpiration(new Date(System.currentTimeMillis() + (isRefreshToken ? refreshExpiration : accessTokenExpiration))).signWith(SignatureAlgorithm.HS512, secret).compact();

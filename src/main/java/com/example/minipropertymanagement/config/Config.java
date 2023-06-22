@@ -48,7 +48,9 @@ public class Config {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
         http.csrf(csrfConfigurer -> csrfConfigurer.disable()).authorizeHttpRequests((authorize) -> {
+            authorize.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll();
             authorize.requestMatchers(HttpMethod.POST, "/api/v1/auth/**").permitAll();
             authorize.requestMatchers("/api/v1/admin**").hasAuthority(Role.ADMIN.getRole());
             authorize.requestMatchers(HttpMethod.GET, "/api/v1/users").authenticated();
@@ -59,6 +61,7 @@ public class Config {
             authorize.requestMatchers(HttpMethod.GET, "/api/v1/properties/{propertyId}").permitAll();
             authorize.requestMatchers("/api/v1/properties/{propertyId}/favorites").hasAnyAuthority(Role.USER.getRole());
             authorize.requestMatchers("/api/v1/favorites").hasAnyAuthority(Role.USER.getRole());
+            authorize.requestMatchers(HttpMethod.GET, "/api/v1/offers").hasAnyAuthority(Role.USER.getRole(), Role.OWNER.getRole());
         }).sessionManagement(sessionManagementConfigurer -> sessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
@@ -81,7 +84,7 @@ public class Config {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**").allowedHeaders("*").exposedHeaders("*").allowedMethods(HttpMethod.GET.name(), HttpMethod.POST.name(), HttpMethod.PUT.name(), HttpMethod.DELETE.name(), HttpMethod.OPTIONS.name(), HttpMethod.HEAD.name(), HttpMethod.PATCH.name(), HttpMethod.TRACE.name()).allowedOrigins("*");
+                registry.addMapping("/**").allowedHeaders("*").exposedHeaders("*").allowedMethods("*").allowedOrigins("*");
             }
         };
 

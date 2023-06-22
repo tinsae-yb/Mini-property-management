@@ -4,7 +4,7 @@ package com.example.minipropertymanagement.controller;
 import com.example.minipropertymanagement.dto.response.OfferResponse;
 import com.example.minipropertymanagement.dto.response.OffersResponse;
 import com.example.minipropertymanagement.enums.OfferActions;
-import com.example.minipropertymanagement.exception.InvalidCredential;
+import com.example.minipropertymanagement.exception.ForbiddenAccess;
 import com.example.minipropertymanagement.exception.NotFoundException;
 import com.example.minipropertymanagement.service.OfferService;
 import lombok.RequiredArgsConstructor;
@@ -20,14 +20,15 @@ public class OfferController {
     private final OfferService offerService;
 
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/offers")
-    public OffersResponse getOffers() throws InvalidCredential {
+    @GetMapping("")
+    public OffersResponse getOffers() throws ForbiddenAccess {
         return offerService.getOffers();
     }
 
+
     @ResponseStatus(HttpStatus.ACCEPTED)
-    @PutMapping(value = "/offers/{offerId}", params = {"action"})
-    public OfferResponse updateOffer(@PathVariable Long offerId, @RequestParam OfferActions action) throws InvalidCredential, NotFoundException {
+    @PutMapping(value = "/{offerId}", params = {"action"})
+    public OfferResponse updateOffer(@PathVariable Long offerId, @RequestParam OfferActions action) throws ForbiddenAccess, NotFoundException {
 
         if(action.equals(OfferActions.ACCEPT_CONTINGENT)){
             return offerService.acceptContingent(offerId);

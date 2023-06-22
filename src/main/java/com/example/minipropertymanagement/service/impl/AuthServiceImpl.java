@@ -8,7 +8,8 @@ import com.example.minipropertymanagement.dto.response.LoginResponse;
 import com.example.minipropertymanagement.dto.response.RefreshTokenResponse;
 import com.example.minipropertymanagement.enums.AccountStatus;
 import com.example.minipropertymanagement.enums.Role;
-import com.example.minipropertymanagement.exception.InvalidCredential;
+import com.example.minipropertymanagement.exception.ForbiddenAccess;
+import com.example.minipropertymanagement.exception.InvalidToken;
 import com.example.minipropertymanagement.repo.UserRepository;
 import com.example.minipropertymanagement.service.AuthService;
 import com.example.minipropertymanagement.util.JwtUtil;
@@ -38,9 +39,9 @@ public class AuthServiceImpl implements AuthService {
     private final BCryptPasswordEncoder passwordEncoder;
 
     @Override
-    public LoginResponse login(LoginRequest loginRequest) throws InvalidCredential {
+    public LoginResponse login(LoginRequest loginRequest) throws InvalidToken {
         Authentication auth = authenticationProvider.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
-        User user = userRepository.findByEmail(auth.getName()).orElseThrow(() -> new InvalidCredential("User not found with this email"));
+        User user = userRepository.findByEmail(auth.getName()).orElseThrow(() -> new InvalidToken("User not found with this email"));
         LoginResponse loginResponse = new LoginResponse();
         loginResponse.setAccessToken(jwtUtil.generateToken(user, false));
         loginResponse.setRefreshToken(jwtUtil.generateToken(user, true));
@@ -65,15 +66,15 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public RefreshTokenResponse refreshToken(RefreshTokenRequest refreshTokenRequest) throws InvalidCredential {
+    public RefreshTokenResponse refreshToken(RefreshTokenRequest refreshTokenRequest) throws InvalidToken {
 //        boolean valid =
                 jwtUtil.validateToken(refreshTokenRequest.getRefreshToken());
 //        if (!valid) {
-//            throw new InvalidCredential("Invalid refresh token");
+//            throw new ForbiddenAccess("Invalid refresh token");
 //        }
         Claims claims = jwtUtil.getClaims(refreshTokenRequest.getRefreshToken());
         String email = claims.getSubject();
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new InvalidCredential("User not found with this email"));
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new ForbiddenAccess("User not found with this email"));
         RefreshTokenResponse refreshTokenResponse = new RefreshTokenResponse();
         refreshTokenResponse.setAccessToken(jwtUtil.generateToken(user, false));
         refreshTokenResponse.setRefreshToken(refreshTokenRequest.getRefreshToken());

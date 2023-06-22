@@ -2,7 +2,7 @@ package com.example.minipropertymanagement.advice;
 
 
 import com.example.minipropertymanagement.exception.ForbiddenAccess;
-import com.example.minipropertymanagement.exception.InvalidCredential;
+import com.example.minipropertymanagement.exception.InvalidToken;
 import com.example.minipropertymanagement.exception.NotFoundException;
 import org.hibernate.sql.ast.SqlTreeCreationException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -77,8 +77,8 @@ public class ControllerErrorAdvice {
     }
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    @ExceptionHandler(InvalidCredential.class)
-    public Map<String, String> invalidCredentialExceptionHandler(InvalidCredential ex) {
+    @ExceptionHandler(InvalidToken.class)
+    public Map<String, String> ForbiddenAccessExceptionHandler(InvalidToken ex) {
         Map<String, String> errors = new HashMap<>();
         errors.put("error", ex.getMessage());
 

@@ -9,7 +9,7 @@ import com.example.minipropertymanagement.enums.OfferStatus;
 import com.example.minipropertymanagement.enums.PropertyStatus;
 import com.example.minipropertymanagement.enums.Role;
 import com.example.minipropertymanagement.exception.ForbiddenAccess;
-import com.example.minipropertymanagement.exception.InvalidCredential;
+import com.example.minipropertymanagement.exception.ForbiddenAccess;
 import com.example.minipropertymanagement.exception.NotFoundException;
 import com.example.minipropertymanagement.repo.OfferRepository;
 import com.example.minipropertymanagement.repo.UserRepository;
@@ -39,9 +39,9 @@ public class OfferServiceImpl implements OfferService {
 
 
     @Override
-    public OffersResponse getOffers() throws InvalidCredential {
+    public OffersResponse getOffers() throws ForbiddenAccess {
         String username = authUtil.getUsername();
-        User user = userRepository.findByEmail(username).orElseThrow(() -> new InvalidCredential("User not found"));
+        User user = userRepository.findByEmail(username).orElseThrow(() -> new ForbiddenAccess("User not found"));
         List<OfferResponse> offers;
         if (user.getRole().equals(Role.USER)) {
 
@@ -57,10 +57,10 @@ public class OfferServiceImpl implements OfferService {
     }
 
     @Override
-    public OfferResponse acceptOffer(Long offerId) throws InvalidCredential, NotFoundException {
+    public OfferResponse acceptOffer(Long offerId) throws ForbiddenAccess, NotFoundException {
 
         String username = authUtil.getUsername();
-        User user = userRepository.findByEmail(username).orElseThrow(() -> new InvalidCredential("User not found"));
+        User user = userRepository.findByEmail(username).orElseThrow(() -> new ForbiddenAccess("User not found"));
 
         Offer offer = offerRepository.findById(offerId).orElseThrow(() -> new NotFoundException("Offer not found"));
         OfferStatus offerStatus = offer.getOfferStatus();
@@ -87,10 +87,10 @@ public class OfferServiceImpl implements OfferService {
     }
 
     @Override
-    public OfferResponse rejectOffer(Long offerId) throws InvalidCredential, NotFoundException {
+    public OfferResponse rejectOffer(Long offerId) throws ForbiddenAccess, NotFoundException {
 
         String username = authUtil.getUsername();
-        User user = userRepository.findByEmail(username).orElseThrow(() -> new InvalidCredential("User not found"));
+        User user = userRepository.findByEmail(username).orElseThrow(() -> new ForbiddenAccess("User not found"));
         Offer offer = offerRepository.findById(offerId).orElseThrow(() -> new NotFoundException("Offer not found"));
         OfferStatus offerStatus = offer.getOfferStatus();
         PropertyStatus propertyStatus = offer.getProperty().getPropertyStatus();
@@ -119,9 +119,9 @@ public class OfferServiceImpl implements OfferService {
     }
 
     @Override
-    public OfferResponse cancelOffer(Long offerId) throws InvalidCredential, NotFoundException {
+    public OfferResponse cancelOffer(Long offerId) throws ForbiddenAccess, NotFoundException {
         String username = authUtil.getUsername();
-        User user = userRepository.findByEmail(username).orElseThrow(() -> new InvalidCredential("User not found"));
+        User user = userRepository.findByEmail(username).orElseThrow(() -> new ForbiddenAccess("User not found"));
         Offer offer = offerRepository.findById(offerId).orElseThrow(() -> new NotFoundException("Offer not found"));
         OfferStatus offerStatus = offer.getOfferStatus();
         PropertyStatus propertyStatus = offer.getProperty().getPropertyStatus();
@@ -153,10 +153,10 @@ public class OfferServiceImpl implements OfferService {
     }
 
     @Override
-    public OfferResponse acceptContingent(Long offerId) throws InvalidCredential, NotFoundException {
+    public OfferResponse acceptContingent(Long offerId) throws ForbiddenAccess, NotFoundException {
 
         String username = authUtil.getUsername();
-        User user = userRepository.findByEmail(username).orElseThrow(() -> new InvalidCredential("User not found"));
+        User user = userRepository.findByEmail(username).orElseThrow(() -> new ForbiddenAccess("User not found"));
         Offer offer = offerRepository.findById(offerId).orElseThrow(() -> new NotFoundException("Offer not found"));
         OfferStatus offerStatus = offer.getOfferStatus();
         PropertyStatus propertyStatus = offer.getProperty().getPropertyStatus();
